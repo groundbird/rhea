@@ -21,6 +21,8 @@
 
 library IEEE;
 use IEEE.STD_LOGIC_1164.all;
+use IEEE.STD_LOGIC_ARITH.all;
+use IEEE.STD_LOGIC_SIGNED.all;
 
 -- Uncomment the following library declaration if using
 -- arithmetic functions with Signed or Unsigned values
@@ -36,9 +38,21 @@ entity rhea is
     -- KC705 Resources
     sysclk_p       : in     std_logic;
     sysclk_n       : in     std_logic;
-    cpu_rst        : in     std_logic;
+    cpu_reset      : in     std_logic;
     gpio_led       : out    std_logic_vector(7 downto 0);
     gpio_dip_sw    : in     std_logic_vector(3 downto 0);
+    gpio_sw_n      : in     std_logic;
+    gpio_sw_e      : in     std_logic;
+    gpio_sw_s      : in     std_logic;
+    gpio_sw_w      : in     std_logic;
+    gpio_sw_c      : in     std_logic;
+    -- ADC I/O
+    clk_ab_p       : in     std_logic;  -- ADC sample clock
+    clk_ab_n       : in     std_logic;
+    cha_p          : in     std_logic_vector(6 downto 0);
+    cha_n          : in     std_logic_vector(6 downto 0);
+    chb_p          : in     std_logic_vector(6 downto 0);
+    chb_n          : in     std_logic_vector(6 downto 0);
     -- ADC/DAC Register Control I/O
     spi_sclk25     : buffer std_logic;
     spi_sdata25    : buffer std_logic;
@@ -46,6 +60,8 @@ entity rhea is
     dac_n_en25     : buffer std_logic;
     adc_sdo25      : in     std_logic;
     dac_sdo25      : in     std_logic;
+    adc_reset25    : out    std_logic;
+    txenable25     : out    std_logic;
     -- PHY I/O
     phy_mdio       : inout  std_logic;
     phy_mdc        : out    std_logic;
@@ -65,20 +81,61 @@ end rhea;
 
 architecture Behavioral of rhea is
 
+  component rs_ff is
+    port (
+      r  : in  std_logic;
+      s  : in  std_logic;
+      q  : out std_logic;
+      qb : out std_logic);
+  end component rs_ff;
+
+  signal cpu_rst : std_logic;
+
   component clk_wiz_0 is
     port (
       clk_in1_p : in  std_logic;        -- sysclk_p
       clk_in1_n : in  std_logic;        -- sysclk_n
       clk_out1  : out std_logic;        -- 200 MHz
-      clk_out2  : out std_logic;        -- 125 MHz
+      clk_out2  : out std_logic;        -- 125 MHz for SiTCP
+      clk_out3  : out std_logic;        -- 100 MHz
       reset     : in  std_logic;        -- cpu_rst
       locked    : out std_logic);
   end component clk_wiz_0;
 
   signal clk_200 : std_logic;
   signal clk_125 : std_logic;
+  signal clk_100 : std_logic;
   signal sys_rst : std_logic;
   signal clk_loc : std_logic;
+
+  component clk_wiz_1 is
+    port (
+      clk_in1_p : in  std_logic;        -- clk_ab_p
+      clk_in1_n : in  std_logic;        -- clk_ab_n
+      clk_out1  : out std_logic;        -- clk_adc
+      reset     : in  std_logic;        -- cpu_rst
+      locked    : out std_logic);
+  end component clk_wiz_1;
+
+  signal clk_adc : std_logic;
+  signal adc_rst : std_logic;
+  signal adc_loc : std_logic;
+
+  component adc is
+    port (
+      clk     : in  std_logic;
+      rst     : in  std_logic;
+      -- ADC I/O
+      cha_p   : in  std_logic_vector(6 downto 0);
+      cha_n   : in  std_logic_vector(6 downto 0);
+      chb_p   : in  std_logic_vector(6 downto 0);
+      chb_n   : in  std_logic_vector(6 downto 0);
+      adc_cha : out std_logic_vector(13 downto 0);
+      adc_chb : out std_logic_vector(13 downto 0));
+  end component adc;
+
+  signal adc_cha : std_logic_vector(13 downto 0);
+  signal adc_chb : std_logic_vector(13 downto 0);
 
   component sitcp is
     port (
@@ -169,18 +226,6 @@ architecture Behavioral of rhea is
       rxd       : in  std_logic_vector(d_width-1 downto 0));
   end component rbcp;
 
---  signal rbcp_act  : std_logic;
---  signal rbcp_addr : std_logic_vector(31 downto 0);
---  signal rbcp_we   : std_logic;
---  signal rbcp_wd   : std_logic_vector(7 downto 0);
---  signal rbcp_re   : std_logic;
---  signal rbcp_rd   : std_logic_vector(7 downto 0);
---  signal rbcp_ack  : std_logic;
---  signal req       : std_logic;
---  signal ack       : std_logic;
---  signal txd       : std_logic_vector(d_width-1 downto 0);
---  signal rxd       : std_logic_vector(d_width-1 downto 0);
-
   component spi_master is
     generic (
       slaves  : integer;
@@ -217,6 +262,12 @@ architecture Behavioral of rhea is
 
   signal spi_busy_buf : std_logic;
   signal spi_ack      : std_logic;
+
+  ---------------------------------------------------------------------------
+  -- Debug
+  ---------------------------------------------------------------------------
+  signal debug : std_logic_vector(7 downto 0);
+  signal cnt   : std_logic_vector(24 downto 0);
   
 begin
 
@@ -229,8 +280,24 @@ begin
       clk_in1_n => sysclk_n,
       clk_out1  => clk_200,
       clk_out2  => clk_125,
+      clk_out3  => clk_100,
       reset     => cpu_rst,
       locked    => clk_loc);
+
+  ADC_Sample_Clock : clk_wiz_1
+    port map (
+      clk_in1_p => clk_ab_p,
+      clk_in1_n => clk_ab_n,
+      clk_out1  => clk_adc,
+      reset     => cpu_rst,
+      locked    => adc_loc);
+
+  RSFF_CPU_Reset : rs_ff
+    port map (
+      r  => cpu_reset,
+      s  => not cpu_reset,
+      q  => open,
+      qb => cpu_rst);
 
   System_Reset : process(clk_200)
   begin
@@ -238,6 +305,34 @@ begin
       sys_rst <= not clk_loc;
     end if;
   end process;
+
+  ADC_Reset : process(clk_adc)
+  begin
+    if (clk_adc'event and clk_adc = '1') then
+      adc_rst <= not adc_loc;
+    end if;
+  end process;
+
+  ---------------------------------------------------------------------------
+  -- ADC
+  ---------------------------------------------------------------------------
+  ADC_inst : adc
+    port map (
+      clk     => clk_adc,
+      rst     => adc_rst,
+      cha_p   => cha_p,
+      cha_n   => cha_n,
+      chb_p   => chb_p,
+      chb_n   => chb_n,
+      adc_cha => adc_cha,
+      adc_chb => adc_chb);
+
+  RSFF_ADC_Register_Reset : rs_ff
+    port map (
+      r  => gpio_sw_c,
+      s  => not gpio_sw_c,
+      q  => open,
+      qb => adc_reset25);
 
   ---------------------------------------------------------------------------
   -- SiTCP
@@ -354,6 +449,24 @@ begin
   ---------------------------------------------------------------------------
   -- GPIO LED
   ---------------------------------------------------------------------------
-  gpio_led <= spi_txd(11 downto 8) & spi_txd(3 downto 0);
+  gpio_led <= adc_cha(13 downto 6) when gpio_dip_sw(3 downto 1) = "000" else
+              adc_chb(13 downto 6) when gpio_dip_sw(3 downto 1) = "001" else
+              debug                when gpio_dip_sw(3 downto 1) = "010" else x"00";
+
+  ---------------------------------------------------------------------------
+  -- Debug
+  ---------------------------------------------------------------------------
+  process(clk_adc)
+  begin
+    if rising_edge(clk_adc) then
+      if adc_rst = '1' then
+        cnt <= (others => '0');
+      else
+        cnt <= cnt + 1;
+      end if;
+    end if;
+  end process;
+
+  debug(7) <= cnt(24);
 
 end Behavioral;

@@ -35,6 +35,7 @@ entity adc is
   port (
     clk     : in  std_logic;
     rst     : in  std_logic;
+    -- ADC I/O
     cha_p   : in  std_logic_vector(6 downto 0);
     cha_n   : in  std_logic_vector(6 downto 0);
     chb_p   : in  std_logic_vector(6 downto 0);
@@ -51,75 +52,55 @@ architecture Behavioral of adc is
 begin
 
   ADC_Data : for i in 0 to 6 generate
-    IBUFDS_inst : IBUFDS
+    Channel_A_IBUFDS_inst : IBUFDS
       generic map (
         DIFF_TERM    => false,
         IBUF_LOW_PWR => true,
-        IOSTANDARD   => "DEFAULT")
+        IOSTANDARD   => "lvds_25")
       port map (
         O  => cha_ddr(i),
         I  => cha_p(i),
         IB => cha_n(i));
 
-    ISERDESE2_inst : ISERDESE2
+    Channel_B_IBUFDS_inst : IBUFDS
       generic map (
-        DATA_RATE         => "DDR",
-        DATA_WIDTH        => 2,
-        DYN_CLKDIV_INV_EN => "FALSE",
-        DYN_CLK_INV_EN    => "FALSE",
-        INIT_Q1           => '0',
-        INIT_Q2           => '0',
-        INIT_Q3           => '0',
-        INIT_Q4           => '0',
-        INTERFACE_TYPE    => "MEMORY",
-        IOBDELAY          => "NONE",
-        NUM_CE            => 1,
-        OFB_USED          => "FALSE",
-        SERDES_MODE       => "MASTER",
-        SRVAL_Q1          => '0',
-        SRVAL_Q2          => '0',
-        SRVAL_Q3          => '0',
-        SRVAL_Q4          => '0')
+        DIFF_TERM    => false,
+        IBUF_LOW_PWR => true,
+        IOSTANDARD   => "lvds_25")
       port map (
-        O         => open,
-        Q1        => adc_cha(2*i + 1),
-        Q2        => adc_cha(2*i),
-        Q3        => open,
-        Q4        => open,
-        Q5        => open,
-        Q6        => open,
-        Q7        => open,
-        Q8        => open,
-        SHIFTOUT1 => open,
-        SHIFTOUT2 => open,
-        BITSLIP   => '0',
-        CE1          => '1',
-        CE2          => '0',
-        CLKDIVP      => '0',
-        CLK          => clk,
-        CLKB         => '0',
-        CLKDIV       => clk_div,
-        OCLK         => '0',
-        DYNCLKDIVSEL => '0',
-        DYNCLKSEL    => '0',
-        D            => '0',
-        DDLY         => '0',
-        OFB          => '0',
-        OCLKB        => '0',
-        RST          => rst,
-        SHIFTIN1     => '0',
-        SHIFTIN2     => '0');
+        O  => chb_ddr(i),
+        I  => chb_p(i),
+        IB => chb_n(i));
 
---    IBUFDS_inst : IBUFDS
---      generic map (
---        DIFF_TERM    => false,
---        IBUF_LOW_PWR => true,
---        IOSTANDARD   => "DEFAULT")
---      port map (
---        O  => chb_ddr(i),
---        I  => chb_p(i),
---        IB => chb_n(i));
-  end generate;
+    Channel_A_IDDR_inst : IDDR
+      generic map (
+        DDR_CLK_EDGE => "OPPOSITE_EDGE",
+        INIT_Q1      => '0',
+        INIT_Q2      => '0',
+        SRTYPE       => "SYNC")
+      port map (
+        Q1 => adc_cha(2*i),
+        Q2 => adc_cha(2*i+1),
+        C  => clk,
+        CE => '1',
+        D  => cha_ddr(i),
+        R  => rst,
+        S  => '0');
 
+    Channel_B_IDDR_inst : IDDR
+      generic map (
+        DDR_CLK_EDGE => "OPPOSITE_EDGE",
+        INIT_Q1      => '0',
+        INIT_Q2      => '0',
+        SRTYPE       => "SYNC")
+      port map (
+        Q1 => adc_chb(2*i),
+        Q2 => adc_chb(2*i+1),
+        C  => clk,
+        CE => '1',
+        D  => chb_ddr(i),
+        R  => rst,
+        S  => '0');
+  end generate ADC_Data;
 
 end Behavioral;

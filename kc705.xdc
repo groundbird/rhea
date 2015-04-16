@@ -58,8 +58,8 @@ set_property PACKAGE_PIN K30 [get_ports phy_txc_gtxclk]
 set_property PACKAGE_PIN M28 [get_ports phy_txclk]
 set_property PACKAGE_PIN M27 [get_ports phy_txctl_txen]
 set_property PACKAGE_PIN N29 [get_ports phy_txer]
-set_property IOSTANDARD LVCMOS18 [get_ports cpu_rst]
-set_property PACKAGE_PIN AB7 [get_ports cpu_rst]
+set_property IOSTANDARD LVCMOS15 [get_ports cpu_reset]
+set_property PACKAGE_PIN AB7 [get_ports cpu_reset]
 set_property PACKAGE_PIN Y28 [get_ports {gpio_dip_sw[3]}]
 set_property PACKAGE_PIN AA28 [get_ports {gpio_dip_sw[2]}]
 set_property PACKAGE_PIN W29 [get_ports {gpio_dip_sw[1]}]
@@ -85,8 +85,10 @@ set_property IOSTANDARD LVCMOS25 [get_ports phy_txer]
 set_property IOSTANDARD LVDS [get_ports sysclk_p]
 set_property IOSTANDARD LVDS [get_ports sysclk_n]
 
+#
 # SiTCP timing constrainsts
 # ref., http://openit.kek.jp/tips/member/fpga-pcb/fpga/741101568
+#
 set_false_path -through [get_nets SiTCP_inst/Wrapper_SiTCP/SiTCP/SiTCP_INT/SiTCP_INT_REG/regX10Data*]
 set_false_path -through [get_nets SiTCP_inst/Wrapper_SiTCP/SiTCP/SiTCP_INT/SiTCP_INT_REG/regX11Data*]
 set_false_path -through [get_nets SiTCP_inst/Wrapper_SiTCP/SiTCP/SiTCP_INT/SiTCP_INT_REG/regX12Data*]
@@ -107,11 +109,6 @@ set_false_path -through [get_nets SiTCP_inst/Wrapper_SiTCP/SiTCP/GMII/GMII_TXBUF
 set_false_path -through [get_nets SiTCP_inst/Wrapper_SiTCP/SiTCP/GMII/GMII_TXBUF/muxEndTgl]
 set_false_path -through [get_nets SiTCP_inst/Wrapper_SiTCP/SiTCP/GMII/GMII_RXBUF/cmpWrAddr*]
 
-#set_property PACKAGE_PIN A22 [get_ports {ss_n[0]}]
-#set_property IOSTANDARD LVCMOS25 [get_ports {ss_n[0]}]
-#set_property PACKAGE_PIN AE30 [get_ports {ss_n[1]}]
-
-set_property PACKAGE_PIN AC24 [get_ports adc_sdo25]
 set_property PACKAGE_PIN AC22 [get_ports adc_n_en25]
 set_property PACKAGE_PIN AE30 [get_ports dac_n_en25]
 set_property PACKAGE_PIN AF30 [get_ports dac_sdo25]
@@ -123,3 +120,62 @@ set_property IOSTANDARD LVCMOS25 [get_ports dac_sdo25]
 set_property IOSTANDARD LVCMOS25 [get_ports dac_n_en25]
 set_property IOSTANDARD LVCMOS25 [get_ports adc_sdo25]
 set_property IOSTANDARD LVCMOS25 [get_ports adc_n_en25]
+
+#
+# ads4249 I/O
+#
+set_property PACKAGE_PIN AG25 [get_ports {cha_p[6]}]
+set_property PACKAGE_PIN AK20 [get_ports {cha_p[5]}]
+set_property PACKAGE_PIN AG22 [get_ports {cha_p[4]}]
+set_property PACKAGE_PIN AH21 [get_ports {cha_p[3]}]
+set_property PACKAGE_PIN AG20 [get_ports {cha_p[2]}]
+set_property PACKAGE_PIN AF20 [get_ports {cha_p[1]}]
+set_property PACKAGE_PIN AE23 [get_ports {cha_p[0]}]
+set_property IOSTANDARD LVDS_25 [get_ports {cha_p[6]}]
+set_property IOSTANDARD LVDS_25 [get_ports {cha_p[5]}]
+set_property IOSTANDARD LVDS_25 [get_ports {cha_p[4]}]
+set_property IOSTANDARD LVDS_25 [get_ports {cha_p[3]}]
+set_property IOSTANDARD LVDS_25 [get_ports {cha_p[2]}]
+set_property IOSTANDARD LVDS_25 [get_ports {cha_p[1]}]
+set_property IOSTANDARD LVDS_25 [get_ports {cha_p[0]}]
+set_property PACKAGE_PIN AD21 [get_ports {chb_p[6]}]
+set_property PACKAGE_PIN AB24 [get_ports {chb_p[5]}]
+set_property PACKAGE_PIN AA20 [get_ports {chb_p[4]}]
+set_property PACKAGE_PIN AE25 [get_ports {chb_p[3]}]
+set_property PACKAGE_PIN AJ24 [get_ports {chb_p[2]}]
+set_property PACKAGE_PIN AK23 [get_ports {chb_p[1]}]
+set_property PACKAGE_PIN AJ22 [get_ports {chb_p[0]}]
+set_property IOSTANDARD LVDS_25 [get_ports {chb_p[6]}]
+set_property IOSTANDARD LVDS_25 [get_ports {chb_p[5]}]
+set_property IOSTANDARD LVDS_25 [get_ports {chb_p[4]}]
+set_property IOSTANDARD LVDS_25 [get_ports {chb_p[3]}]
+set_property IOSTANDARD LVDS_25 [get_ports {chb_p[2]}]
+set_property IOSTANDARD LVDS_25 [get_ports {chb_p[1]}]
+set_property IOSTANDARD LVDS_25 [get_ports {chb_p[0]}]
+set_property PACKAGE_PIN AE24 [get_ports clk_ab_n]
+set_property IOSTANDARD LVDS_25 [get_ports clk_ab_p]
+set_property IOSTANDARD LVDS_25 [get_ports clk_ab_n]
+
+set_property PACKAGE_PIN AD24 [get_ports adc_reset25]
+set_property IOSTANDARD LVCMOS25 [get_ports adc_reset25]
+set_property PACKAGE_PIN AD22 [get_ports txenable25]
+set_property IOSTANDARD LVCMOS25 [get_ports txenable25]
+set_property PACKAGE_PIN AC24 [get_ports adc_sdo25]
+
+
+
+create_clock -period 5.000 -name clk_ab_p -waveform {0.000 2.500} [get_ports clk_ab_p]
+
+set_property PACKAGE_PIN G12 [get_ports gpio_sw_c]
+set_property IOSTANDARD LVCMOS25 [get_ports gpio_sw_c]
+set_property PACKAGE_PIN AG5 [get_ports gpio_sw_e]
+set_property IOSTANDARD LVCMOS15 [get_ports gpio_sw_n]
+set_property IOSTANDARD LVCMOS15 [get_ports gpio_sw_e]
+set_property PACKAGE_PIN AA12 [get_ports gpio_sw_n]
+set_property PACKAGE_PIN AB12 [get_ports gpio_sw_s]
+set_property IOSTANDARD LVCMOS15 [get_ports gpio_sw_s]
+set_property PACKAGE_PIN AC6 [get_ports gpio_sw_w]
+set_property IOSTANDARD LVCMOS15 [get_ports gpio_sw_w]
+
+
+
