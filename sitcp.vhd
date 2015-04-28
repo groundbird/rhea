@@ -193,7 +193,7 @@ begin
       tcp_error      => open,
       tcp_close_req  => tcp_close,
       tcp_close_ack  => tcp_close,
-      tcp_rx_wc      => (others => '0'),
+      tcp_rx_wc      => (others => '0'),  -- disable TCP RX
       tcp_rx_wr      => open,
       tcp_rx_data    => open,
       tcp_tx_full    => tcp_tx_full,

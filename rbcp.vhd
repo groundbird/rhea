@@ -32,9 +32,6 @@ use IEEE.STD_LOGIC_ARITH.all;
 --library UNISIM;
 --use UNISIM.VComponents.all;
 
-library work;
-use work.rhea_pkg.all;
-
 entity rbcp is
   generic (
     d_width : integer);
@@ -52,14 +49,25 @@ entity rbcp is
     -- Module I/O
     req       : out std_logic;
     ack       : in  std_logic;
-    txd       : out std_logic_vector(d_width-1 downto 0);
-    rxd       : in  std_logic_vector(d_width-1 downto 0));
+    rxd       : in  std_logic_vector(d_width-1 downto 0);
+    spi_txd   : out std_logic_vector(d_width-1 downto 0);
+    sft_rst   : out std_logic);
 end rbcp;
 
 architecture Behavioral of rbcp is
 
   type rbcp_state is (init, idle, tx, fini);
   signal s_rbcp : rbcp_state;
+
+--  component oneshot_pulse is
+--    port (
+--      clk : in  std_logic;
+--      rst : in  std_logic;
+--      d   : in  std_logic;
+--      q   : out std_logic);
+--  end component oneshot_pulse;
+
+--  signal sft_rst_buf : std_logic;
 
 begin
 
@@ -73,7 +81,6 @@ begin
         req      <= '0';
       else
         case s_rbcp is
-
           when init =>
             rbcp_ack <= '0';
             req      <= '0';
@@ -110,25 +117,38 @@ begin
     end if;
   end process;
 
-  reg_proc : process(clk)
+  process(clk)
   begin
     if (clk'event and clk = '1') then
       if rst = '1' then
-        txd <= (others => '0');
+        spi_txd <= (others => '0');
       else
         case rbcp_addr(31 downto 24) is
+          -- ADC/DAC register control
           when x"10" =>                 -- ADC register write
-            txd <= rbcp_addr(7 downto 0) & rbcp_wd;
+            spi_txd <= rbcp_addr(7 downto 0) & rbcp_wd;
           when x"11" =>                 -- ADC register read
-            txd <= rbcp_addr(7 downto 0) & x"00";
+            spi_txd <= rbcp_addr(7 downto 0) & x"00";
           when x"20" =>                 -- DAC register write
-            txd <= '0' & "00" & rbcp_addr(4 downto 0) & rbcp_wd;
+            spi_txd <= '0' & "00" & rbcp_addr(4 downto 0) & rbcp_wd;
           when x"21" =>                 -- DAC register read
-            txd <= '1' & "00" & rbcp_addr(4 downto 0) & x"00";
+            spi_txd <= '1' & "00" & rbcp_addr(4 downto 0) & x"00";
+
+          -- Snapshot of ADC data
+--          when x"30" => sft_rst_buf <= '1';
+--          when x"31" => sft_rst_buf <= '0';
+
           when others => null;
         end case;
       end if;
     end if;
   end process;
+
+--  Oneshot_Pulse_ADC_Snapshot : oneshot_pulse
+--    port map (
+--      clk => clk,
+--      rst => rst,
+--      d   => sft_rst_buf,
+--      q   => sft_rst);
 
 end Behavioral;

@@ -2,9 +2,9 @@
 -- Company: 
 -- Engineer: 
 -- 
--- Create Date: 2015/04/01 22:47:57
+-- Create Date: 2015/04/24 17:22:41
 -- Design Name: 
--- Module Name: rhea_pkg - Behavioral
+-- Module Name: falling_edge_detector - Behavioral
 -- Project Name: 
 -- Target Devices: 
 -- Tool Versions: 
@@ -31,13 +31,26 @@ use IEEE.STD_LOGIC_1164.all;
 --library UNISIM;
 --use UNISIM.VComponents.all;
 
-package rhea_pkg is
+entity falling_edge_detector is
+  port (
+    clk : in  std_logic;
+    d   : in  std_logic;
+    q   : out std_logic);
+end entity falling_edge_detector;
 
-  -- timestamp size
-  constant ts_size : integer := 5;      -- bytes
+architecture Behavioral of falling_edge_detector is
 
-  -- formated data
-  constant fmt_data_size : integer := 1024;  
-  type fmt_data is array(natural range <>) of std_logic_vector(7 downto 0);
-  
-end rhea_pkg;
+  signal d_buf : std_logic;
+
+begin
+
+  process(clk)
+  begin
+    if (clk'event and clk = '1') then
+      d_buf <= d;
+    end if;
+  end process;
+
+  q <= (not d) and d_buf;
+
+end architecture Behavioral;
