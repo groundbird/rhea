@@ -41,9 +41,8 @@ end data_transfer_to_sitcp_sim;
 
 architecture Behavioral of data_transfer_to_sitcp_sim is
 
-  constant clk_period     : time    := 5 ns;  -- 200 MHz
-  constant clk_period_adc : time    := 4 ns;  -- 250 MHz
-  constant fmt_data_size  : integer := 10;    -- actually, 1024
+  constant clk_period     : time := 5 ns;  -- 200 MHz
+  constant clk_period_adc : time := 4 ns;  -- 250 MHz
 
   signal clk_200 : std_logic;
   signal clk_adc : std_logic;
@@ -65,12 +64,12 @@ architecture Behavioral of data_transfer_to_sitcp_sim is
       ts_size : integer;                -- bytes
       d_cnt   : integer);               -- fmt_data_size*d_cnt bytes
     port (
-      clk    : in  std_logic;
-      rst    : in  std_logic;
-      trg    : in  std_logic;
-      ts     : in  std_logic_vector(ts_size*8-1 downto 0);
-      fmt_en : out std_logic;
-      ack    : out std_logic);
+      clk      : in  std_logic;
+      rst      : in  std_logic;
+      trg      : in  std_logic;
+      ts       : in  std_logic_vector(ts_size*8-1 downto 0);
+      fmt_en   : out std_logic;
+      ack      : out std_logic);
   end component adc_snapshot;
 
   signal adc_ss_ack : std_logic;
@@ -85,7 +84,7 @@ architecture Behavioral of data_transfer_to_sitcp_sim is
       en               : in  std_logic;
       ts               : in  std_logic_vector(ts_size*8-1 downto 0);
       fifo_almost_full : in  std_logic;
-      ts_trg           : out std_logic;
+--      ts_trg           : out std_logic;
       fifo_wr_en       : out std_logic;
       busy             : out std_logic;
       ack              : out std_logic;
@@ -93,7 +92,7 @@ architecture Behavioral of data_transfer_to_sitcp_sim is
   end component data_format;
 
   signal fmt_en    : std_logic;
-  signal ts_trg    : std_logic;
+--  signal ts_trg    : std_logic;
   signal fmt_busy  : std_logic;
   signal fmt_carry : std_logic;
   signal fmt_data  : std_logic_vector(7 downto 0);
@@ -115,9 +114,9 @@ architecture Behavioral of data_transfer_to_sitcp_sim is
   signal fifo_wr_en       : std_logic;
   signal fifo_almost_full : std_logic;
 
-  ----------------------------------------------------------------------------
+  ---------------------------------------------------------------------------
   -- SiTCP signal
-  ----------------------------------------------------------------------------
+  ---------------------------------------------------------------------------
   signal tcp_open_ack : std_logic;
   signal tcp_tx_full  : std_logic;
   signal tcp_txd      : std_logic_vector(7 downto 0);
@@ -234,14 +233,14 @@ begin
   ADC_Snapshot_inst : adc_snapshot
     generic map (
       ts_size => ts_size,               -- bytes
-      d_cnt   => 10)                    -- fmt_data_size*d_cnt bytes
+      d_cnt   => adc_ss_d_cnt)          -- fmt_data_size*d_cnt bytes
     port map (
-      clk    => clk_adc,
-      rst    => adc_rst,
-      trg    => sft_rst,
-      ts     => ts,
-      fmt_en => fmt_en,
-      ack    => adc_ss_ack);
+      clk      => clk_adc,
+      rst      => adc_rst,
+      trg      => sft_rst,
+      ts       => ts,
+      fmt_en   => fmt_en,
+      ack      => adc_ss_ack);
 
   ---------------------------------------------------------------------------
   -- Data Format for SiTCP
@@ -256,7 +255,7 @@ begin
       en               => fmt_en,
       ts               => ts,
       fifo_almost_full => fifo_almost_full,
-      ts_trg           => ts_trg,
+--      ts_trg           => ts_trg,
       fifo_wr_en       => fifo_wr_en,
       busy             => fmt_busy,
       ack              => fmt_ack,
@@ -329,7 +328,7 @@ begin
     port map (
       clk  => clk_adc,
       arst => sft_rst or adc_rst,
-      trg  => ts_trg,
+      trg  => fmt_ack,
       ts   => ts);
 
   ---------------------------------------------------------------------------
@@ -340,9 +339,8 @@ begin
     -- Initialize
     sys_rst <= '1';
     adc_rst <= '1';
-
-    -- Data Transfer to SiTCP Initialize
-    tcp_open_ack <= '0';
+    
+    tcp_open_ack <= '1';
     tcp_tx_full  <= '0';
 
     -- RBCP Initialize
@@ -366,6 +364,27 @@ begin
     rbcp_we   <= '1';
     wait for clk_period;
     rbcp_we   <= '0';
+
+--    wait for 5 us;
+
+    -- 2nd sequence
+--    rbcp_we <= '1';
+--    wait for clk_period;
+--    rbcp_we <= '0';
+
+--    wait for 5 us;
+
+    -- 3rd sequence
+--    rbcp_we <= '1';
+--    wait for clk_period;
+--    rbcp_we <= '0';
+
+--    wait for 5 us;
+
+    -- 4th sequence
+--    rbcp_we <= '1';
+--    wait for clk_period;
+--    rbcp_we <= '0';
 
     wait;
   end process;

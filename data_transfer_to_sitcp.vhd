@@ -72,7 +72,6 @@ architecture Behavioral of data_transfer_to_sitcp is
   signal fifo_wr_ack      : std_logic;
   signal fifo_overflow    : std_logic;
   signal fifo_empty       : std_logic;
-  signal fifo_valid       : std_logic;
   signal fifo_underflow   : std_logic;
   signal fifo_rd_data_cnt : std_logic_vector(16 downto 0);
   signal fifo_wr_data_cnt : std_logic_vector(16 downto 0);
@@ -93,12 +92,11 @@ begin
       wr_ack        => fifo_wr_ack,
       overflow      => fifo_overflow,
       empty         => fifo_empty,
-      valid         => fifo_valid,
+      valid         => tcp_tx_wr,
       underflow     => fifo_underflow,
       rd_data_count => fifo_rd_data_cnt,
       wr_data_count => fifo_wr_data_cnt);
 
-  fifo_rd_en <= tcp_open_ack when (tcp_tx_full = '0' and fifo_empty = '0') else '0';
-  tcp_tx_wr  <= fifo_valid and fifo_rd_en;
+  fifo_rd_en <= not (fifo_empty or tcp_tx_full) and tcp_open_ack;
   
 end architecture Behavioral;

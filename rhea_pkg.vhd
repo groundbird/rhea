@@ -34,10 +34,21 @@ use IEEE.STD_LOGIC_1164.all;
 package rhea_pkg is
 
   -- timestamp size
-  constant ts_size : integer := 5;      -- bytes
+--  constant ts_size : integer := 5;      -- bytes
 
-  -- formated data
-  constant fmt_data_size : integer := 1024;  
-  type fmt_data is array(natural range <>) of std_logic_vector(7 downto 0);
+--  constant d_size        : integer := 4;  -- bytes
+  -- header (1) + timestamp (5) + data + footer (1); (bytes)
+--  constant fmt_data_size : integer := d_size+7;
+--  constant fmt_data_size : integer := 1024*100;  -- bytes
+--  type fmt_data is array(natural range <>) of std_logic_vector(7 downto 0);
+
+  -- ADC Snapshot
+--  constant adc_ss_d_cnt : integer := 100;  -- snapshot size [KB]
+
+  -- raw data size of formated data
+--  constant raw_data_size : integer := fmt_data_size-ts_size-2;  -- 1017 bytes
+
+  subtype byte is std_logic_vector(7 downto 0);
+  type byte_array is array(natural range <>) of byte;
   
 end rhea_pkg;

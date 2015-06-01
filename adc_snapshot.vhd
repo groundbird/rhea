@@ -33,63 +33,183 @@ use IEEE.STD_LOGIC_SIGNED.all;
 --library UNISIM;
 --use UNISIM.VComponents.all;
 
+library work;
+use work.rhea_pkg.all;
+
 entity adc_snapshot is
-  generic (
-    ts_size : integer;                  -- bytes
-    d_cnt   : integer);                 -- fmt_data_size*d_cnt bytes (1 MB)
   port (
-    clk    : in  std_logic;
-    rst    : in  std_logic;
-    trg    : in  std_logic;
-    ts     : in  std_logic_vector(ts_size*8-1 downto 0);
-    fmt_en : out std_logic;
-    ack    : out std_logic);
+    clk        : in     std_logic;
+    rst        : in     std_logic;
+    en         : in     std_logic;
+    fmt_busy   : in     std_logic;
+    adc_data_a : in     std_logic_vector(13 downto 0);
+    adc_data_b : in     std_logic_vector(13 downto 0);
+    dout       : out    byte_array(3 downto 0);
+    rd_en      : buffer std_logic;
+    ack        : out    std_logic);
 end entity adc_snapshot;
 
 architecture Behavioral of adc_snapshot is
 
-  type adc_ss_state is (idle, init, exec, fini);
-  signal s_adc_ss : adc_ss_state;
+  type fifo_state is (idle, init, exec, fini);
+--  type fifo_state is (idle, init, wr, rd, fini);
+  signal s_fifo : fifo_state;
 
+  signal adcda_fmt : std_logic_vector(15 downto 0);
+  signal adcdb_fmt : std_logic_vector(15 downto 0);
+
+  component fifo_adc_snapshot is
+    port (
+      clk         : in  std_logic;
+      srst        : in  std_logic;
+      din         : in  std_logic_vector(31 downto 0);
+      wr_en       : in  std_logic;
+      rd_en       : in  std_logic;
+      dout        : out std_logic_vector(31 downto 0);
+      full        : out std_logic;
+      almost_full : out std_logic;
+      empty       : out std_logic;
+--      data_count  : out std_logic_vector(16 downto 0));
+      data_count  : out std_logic_vector(7 downto 0));
+  end component fifo_adc_snapshot;
+
+  signal fifo_rst    : std_logic;
+  signal din         : std_logic_vector(31 downto 0);
+  signal wr_en       : std_logic;
+  signal dout_buf    : std_logic_vector(31 downto 0);
+  signal full        : std_logic;
+  signal almost_full : std_logic;
+  signal empty       : std_logic;
+--  signal data_count  : std_logic_vector(16 downto 0);
+  signal data_count  : std_logic_vector(7 downto 0);
+
+  signal cnt : std_logic_vector(data_count'left downto 0);
+  
 begin
 
-  ADC_Snapshot_SM_proc : process(clk)
+  adcda_fmt <= "00" & adc_data_a;
+  adcdb_fmt <= "00" & adc_data_b;
+--  din       <= adcda_fmt & adcdb_fmt when s_fifo = wr else (others => '0');
+  din       <= adcda_fmt & adcdb_fmt;
+
+  Format_ADC_Data_gen : for i in 0 to 3 generate
+    dout(3-i) <= dout_buf(8*i+7 downto 8*i);
+  end generate Format_ADC_Data_gen;
+
+  FIFO_512KB_for_ADC_Snapshot : fifo_adc_snapshot
+    port map (
+      clk         => clk,
+      srst        => fifo_rst,
+      din         => din,
+      wr_en       => wr_en,
+      rd_en       => rd_en,
+      dout        => dout_buf,
+      full        => full,
+      almost_full => almost_full,
+      empty       => empty,
+      data_count  => data_count);
+
+  fifo_rst <= '1' when s_fifo = init else '0';
+  wr_en    <= '1' when s_fifo = exec else '0';
+--  wr_en    <= '1' when s_fifo = wr   else '0';
+  ack      <= '1' when s_fifo = fini else '0';
+
+  rd_en <= not (fmt_busy or empty);
+--  rd_en <= '1' when s_fifo = rd else '0';
+
+  process(clk)
   begin
-    if (clk'event and clk = '1') then
+    if rising_edge(clk) then
       if rst = '1' then
-        fmt_en   <= '0';
-        s_adc_ss <= idle;
-        ack      <= '0';
+        s_fifo <= idle;
+--        rd_en  <= '0';
+        cnt    <= (others => '0');
       else
-        case s_adc_ss is
+        case s_fifo is
           when idle =>
-            ack <= '0';
-            if trg = '1' then
-              s_adc_ss <= init;
+--            rd_en <= '0';
+            if en = '1' then
+              s_fifo <= init;
             else
-              s_adc_ss <= idle;
+              s_fifo <= idle;
             end if;
-            
+
           when init =>
-            fmt_en   <= '1';
-            s_adc_ss <= exec;
+            if full = '0' then
+              s_fifo <= exec;
+            else
+              cnt    <= (others => '0');
+              s_fifo <= init;
+            end if;
 
           when exec =>
-            if ts = conv_std_logic_vector(d_cnt-1, ts_size*8) then
-              s_adc_ss <= fini;
+--            if almost_full = '1' then
+--              s_fifo <= fini;
+            if cnt = (cnt'range => '1') then
+              s_fifo <= fini;
             else
-              s_adc_ss <= exec;
+              cnt    <= cnt + 1;
+              s_fifo <= exec;
             end if;
 
-          when fini =>
-            ack      <= '1';
-            fmt_en   <= '0';
-            s_adc_ss <= idle;
+--          when wr =>
+--            if almost_full = '1' then
+--              s_fifo <= rd;
+--            else
+--              s_fifo <= wr;
+--            end if;
 
-          when others => s_adc_ss <= idle;
+--          when rd =>
+--            if empty = '1' then
+--              s_fifo <= fini;
+--            else
+--              rd_en  <= not fmt_busy;
+--              s_fifo <= rd;
+--            end if;
+
+          when fini => s_fifo <= idle;
+
+          when others => null;
         end case;
       end if;
     end if;
   end process;
+
+--  process(clk)
+--  begin
+--    if rising_edge(clk) then
+--      if rst = '1' then
+--        s_adc_ss <= idle;
+--      else
+--        case s_adc_ss is
+--          when idle =>
+--            if en = '1' then
+--              s_adc_ss <= init;
+--            else
+--              s_adc_ss <= idle;
+--            end if;
+
+--          when init =>
+--            s_adc_ss <= exec;
+
+--          when exec =>
+--            if ts < conv_std_logic_vector(131072, 24) then
+--              s_adc_ss <= exec;
+--            else
+--              mem_wr_en <= '0';
+--              s_adc_ss  <= fini;
+--            end if;
+
+--          when fini =>
+--            ack      <= '1';
+--            s_adc_ss <= idle;
+
+--          when others => s_adc_ss <= idle;
+--        end case;
+--      end if;
+--    end if;
+--  end process;
+
+--  busy <= '1' when s_adc_ss /= idle else '0';
 
 end architecture Behavioral;

@@ -33,21 +33,21 @@ use UNISIM.VComponents.all;
 
 entity adc is
   port (
-    clk     : in  std_logic;
-    rst     : in  std_logic;
+    clk        : in  std_logic;
+    rst        : in  std_logic;
     -- ADC I/O
-    cha_p   : in  std_logic_vector(6 downto 0);
-    cha_n   : in  std_logic_vector(6 downto 0);
-    chb_p   : in  std_logic_vector(6 downto 0);
-    chb_n   : in  std_logic_vector(6 downto 0);
-    adc_cha : out std_logic_vector(13 downto 0);
-    adc_chb : out std_logic_vector(13 downto 0));
+    cha_p      : in  std_logic_vector(6 downto 0);
+    cha_n      : in  std_logic_vector(6 downto 0);
+    chb_p      : in  std_logic_vector(6 downto 0);
+    chb_n      : in  std_logic_vector(6 downto 0);
+    adc_data_a : out std_logic_vector(13 downto 0);
+    adc_data_b : out std_logic_vector(13 downto 0));
 end adc;
 
 architecture Behavioral of adc is
 
-  signal cha_ddr : std_logic_vector(6 downto 0);
-  signal chb_ddr : std_logic_vector(6 downto 0);
+  signal a_ddr : std_logic_vector(6 downto 0);
+  signal b_ddr : std_logic_vector(6 downto 0);
 
 begin
 
@@ -58,7 +58,7 @@ begin
         IBUF_LOW_PWR => true,
         IOSTANDARD   => "lvds_25")
       port map (
-        O  => cha_ddr(i),
+        O  => a_ddr(i),
         I  => cha_p(i),
         IB => cha_n(i));
 
@@ -68,7 +68,7 @@ begin
         IBUF_LOW_PWR => true,
         IOSTANDARD   => "lvds_25")
       port map (
-        O  => chb_ddr(i),
+        O  => b_ddr(i),
         I  => chb_p(i),
         IB => chb_n(i));
 
@@ -79,11 +79,11 @@ begin
         INIT_Q2      => '0',
         SRTYPE       => "SYNC")
       port map (
-        Q1 => adc_cha(2*i),
-        Q2 => adc_cha(2*i+1),
+        Q1 => adc_data_a(2*i),
+        Q2 => adc_data_a(2*i+1),
         C  => clk,
         CE => '1',
-        D  => cha_ddr(i),
+        D  => a_ddr(i),
         R  => rst,
         S  => '0');
 
@@ -94,11 +94,11 @@ begin
         INIT_Q2      => '0',
         SRTYPE       => "SYNC")
       port map (
-        Q1 => adc_chb(2*i),
-        Q2 => adc_chb(2*i+1),
+        Q1 => adc_data_b(2*i),
+        Q2 => adc_data_b(2*i+1),
         C  => clk,
         CE => '1',
-        D  => chb_ddr(i),
+        D  => b_ddr(i),
         R  => rst,
         S  => '0');
   end generate ADC_Data;

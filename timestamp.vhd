@@ -40,22 +40,28 @@ entity timestamp is
   generic (
     ts_size : integer);                 -- bytes
   port (
-    clk  : in     std_logic;
-    arst : in     std_logic;
-    trg  : in     std_logic;
-    ts   : buffer std_logic_vector(ts_size*8-1 downto 0));
+    clk : in  std_logic;
+    rst : in  std_logic;
+    trg : in  std_logic;
+    ts  : out byte_array(ts_size-1 downto 0));
 end entity timestamp;
 
 architecture Behavioral of timestamp is
 
+  signal ts_buf : std_logic_vector(ts_size*8-1 downto 0);
+
 begin
 
-  Timestamp_proc : process(arst, clk)
+  Timestamp_gen : for i in 0 to ts_size-1 generate
+    ts(ts_size-1 - i) <= ts_buf(7+8*i downto 8*i);
+  end generate Timestamp_gen;
+
+  process(rst, clk)
   begin
-    if arst = '1' then
-      ts <= (others => '0');
+    if rst = '1' then
+      ts_buf <= (others => '0');
     elsif (clk'event and clk = '1') then
-      ts <= ts + trg;
+      ts_buf <= ts_buf + trg;
     else
       null;
     end if;
