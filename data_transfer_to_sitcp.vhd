@@ -42,12 +42,13 @@ entity data_transfer_to_sitcp is
     tcp_tx_full      : in  std_logic;
     din              : in  std_logic_vector(7 downto 0);
     tcp_txd          : out std_logic_vector(7 downto 0);
-    tcp_tx_wr        : out std_logic);
+    tcp_tx_wr        : out std_logic;
+    wr_data_count    : out std_logic_vector(16 downto 0));
 end entity data_transfer_to_sitcp;
 
 architecture Behavioral of data_transfer_to_sitcp is
 
-  component fifo_generator_0 is
+  component fifo_for_sitcp is
     port (
       rst           : in  std_logic;
       wr_clk        : in  std_logic;
@@ -58,27 +59,18 @@ architecture Behavioral of data_transfer_to_sitcp is
       dout          : out std_logic_vector(7 downto 0);
       full          : out std_logic;
       almost_full   : out std_logic;
-      wr_ack        : out std_logic;
-      overflow      : out std_logic;
       empty         : out std_logic;
       valid         : out std_logic;
-      underflow     : out std_logic;
-      rd_data_count : out std_logic_vector(16 downto 0);
       wr_data_count : out std_logic_vector(16 downto 0));
-  end component fifo_generator_0;
+  end component fifo_for_sitcp;
 
-  signal fifo_rd_en       : std_logic;
-  signal fifo_full        : std_logic;
-  signal fifo_wr_ack      : std_logic;
-  signal fifo_overflow    : std_logic;
-  signal fifo_empty       : std_logic;
-  signal fifo_underflow   : std_logic;
-  signal fifo_rd_data_cnt : std_logic_vector(16 downto 0);
-  signal fifo_wr_data_cnt : std_logic_vector(16 downto 0);
+  signal fifo_rd_en : std_logic;
+  signal fifo_full  : std_logic;
+  signal fifo_empty : std_logic;
 
 begin
   
-  AsynchroFIFO_128KB_for_Data_Transfer_to_SiTCP : fifo_generator_0
+  FIFO_128KB_for_SiTCP : fifo_for_sitcp
     port map (
       rst           => rst,
       wr_clk        => wr_clk,
@@ -89,13 +81,9 @@ begin
       dout          => tcp_txd,
       full          => fifo_full,
       almost_full   => fifo_almost_full,
-      wr_ack        => fifo_wr_ack,
-      overflow      => fifo_overflow,
       empty         => fifo_empty,
       valid         => tcp_tx_wr,
-      underflow     => fifo_underflow,
-      rd_data_count => fifo_rd_data_cnt,
-      wr_data_count => fifo_wr_data_cnt);
+      wr_data_count => wr_data_count);
 
   fifo_rd_en <= not (fifo_empty or tcp_tx_full) and tcp_open_ack;
   

@@ -36,7 +36,10 @@ package rhea_pkg is
   -- timestamp size
 --  constant ts_size : integer := 5;      -- bytes
 
---  constant d_size        : integer := 4;  -- bytes
+  -- "d_size" is the main data of formated data (i.e., compose of header,
+  -- timestamp, main data and footer).
+  constant d_size : integer := 4;
+--  constant adc_ss_d_size : integer := 4;  -- bytes
   -- header (1) + timestamp (5) + data + footer (1); (bytes)
 --  constant fmt_data_size : integer := d_size+7;
 --  constant fmt_data_size : integer := 1024*100;  -- bytes

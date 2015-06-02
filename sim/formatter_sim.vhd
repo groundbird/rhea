@@ -146,8 +146,8 @@ begin
     rst              <= '1';
     ts_rst           <= '1';
     fifo_almost_full <= '0';
-    adc_data_a       <= (others => '0');
-    adc_data_b       <= (others => '0');
+--    adc_data_a       <= (others => '0');
+--    adc_data_b       <= (others => '0');
     adc_ss_en        <= '0';
 
     wait for clk_period*3;
@@ -157,11 +157,11 @@ begin
     wait for clk_period*10;
 
     -- 1st
-    adc_ss_en  <= '1';
-    adc_data_a <= "000000" & x"11";
-    adc_data_b <= "000000" & x"22";
+    adc_ss_en <= '1';
+--    adc_data_a <= "000000" & x"11";
+--    adc_data_b <= "000000" & x"22";
     wait for clk_period;
-    adc_ss_en  <= '0';
+    adc_ss_en <= '0';
 
 --    wait for 15*clk_period;
 
@@ -182,6 +182,19 @@ begin
 --    din   <= (others => x"00");
 
     wait;
+  end process;
+
+  adc_data_proc : process(clk)
+  begin
+    if rising_edge(clk) then
+      if rst = '1' then
+        adc_data_a <= (others => '0');
+        adc_data_b <= (others => '0');
+      else
+        adc_data_a <= adc_data_a + '1';
+        adc_data_b <= adc_data_b - '1';
+      end if;
+    end if;
   end process;
 
 end Behavioral;

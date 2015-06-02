@@ -59,16 +59,6 @@ architecture Behavioral of rbcp is
   type rbcp_state is (init, idle, tx, fini);
   signal s_rbcp : rbcp_state;
 
---  component oneshot_pulse is
---    port (
---      clk : in  std_logic;
---      rst : in  std_logic;
---      d   : in  std_logic;
---      q   : out std_logic);
---  end component oneshot_pulse;
-
---  signal sft_rst_buf : std_logic;
-
 begin
 
   RBCP_SM_proc : process(clk)
@@ -127,14 +117,17 @@ begin
           -- ADC/DAC register control
           when x"10" =>                 -- ADC register write
             spi_txd <= rbcp_addr(7 downto 0) & rbcp_wd;
+            
           when x"11" =>                 -- ADC register read
             spi_txd <= rbcp_addr(7 downto 0) & x"00";
+            
           when x"20" =>                 -- DAC register write
             spi_txd <= '0' & "00" & rbcp_addr(4 downto 0) & rbcp_wd;
+            
           when x"21" =>                 -- DAC register read
             spi_txd <= '1' & "00" & rbcp_addr(4 downto 0) & x"00";
 
-          -- Snapshot of ADC data
+            -- Snapshot of ADC data
 --          when x"30" => sft_rst_buf <= '1';
 --          when x"31" => sft_rst_buf <= '0';
 
@@ -143,12 +136,5 @@ begin
       end if;
     end if;
   end process;
-
---  Oneshot_Pulse_ADC_Snapshot : oneshot_pulse
---    port map (
---      clk => clk,
---      rst => rst,
---      d   => sft_rst_buf,
---      q   => sft_rst);
 
 end Behavioral;

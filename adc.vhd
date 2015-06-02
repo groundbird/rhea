@@ -49,7 +49,19 @@ architecture Behavioral of adc is
   signal a_ddr : std_logic_vector(6 downto 0);
   signal b_ddr : std_logic_vector(6 downto 0);
 
+  -- tune the timing violations
+--  signal rst_buf  : std_logic;
+--  signal rst_buf2 : std_logic;
+
 begin
+
+--  Timing_Buffer_for_ADC_Reset : process(clk)
+--  begin
+--    if rising_edge(clk) then
+--      rst_buf2 <= rst;
+--      rst_buf  <= rst_buf2;
+--    end if;
+--  end process;
 
   ADC_Data : for i in 0 to 6 generate
     Channel_A_IBUFDS_inst : IBUFDS
@@ -77,7 +89,7 @@ begin
         DDR_CLK_EDGE => "OPPOSITE_EDGE",
         INIT_Q1      => '0',
         INIT_Q2      => '0',
-        SRTYPE       => "SYNC")
+        SRTYPE       => "ASYNC")
       port map (
         Q1 => adc_data_a(2*i),
         Q2 => adc_data_a(2*i+1),
@@ -92,7 +104,7 @@ begin
         DDR_CLK_EDGE => "OPPOSITE_EDGE",
         INIT_Q1      => '0',
         INIT_Q2      => '0',
-        SRTYPE       => "SYNC")
+        SRTYPE       => "ASYNC")
       port map (
         Q1 => adc_data_b(2*i),
         Q2 => adc_data_b(2*i+1),

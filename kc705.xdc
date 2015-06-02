@@ -164,7 +164,7 @@ set_property PACKAGE_PIN AC24 [get_ports adc_sdo25]
 
 
 
-create_clock -period 5.000 -name clk_ab_p -waveform {0.000 2.500} [get_ports clk_ab_p]
+#create_clock -period 5.000 -name clk_ab_p -waveform {0.000 2.500} [get_ports clk_ab_p]
 
 set_property PACKAGE_PIN G12 [get_ports gpio_sw_c]
 set_property IOSTANDARD LVCMOS25 [get_ports gpio_sw_c]

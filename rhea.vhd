@@ -102,33 +102,32 @@ architecture Behavioral of rhea is
   end component falling_edge_detector;
 
   signal spi_ack : std_logic;
-  signal fmt_ack : std_logic;
+--  signal fmt_ack : std_logic;
 
-  component clk_wiz_0 is
+  component system_clock is
     port (
       clk_in1_p : in  std_logic;        -- sysclk_p
       clk_in1_n : in  std_logic;        -- sysclk_n
       clk_out1  : out std_logic;        -- 200 MHz
       clk_out2  : out std_logic;        -- 125 MHz for SiTCP
-      clk_out3  : out std_logic;        -- 100 MHz
+--      clk_out3  : out std_logic;        -- 100 MHz
       reset     : in  std_logic;        -- cpu_rst
       locked    : out std_logic);
-  end component clk_wiz_0;
+  end component system_clock;
 
   signal clk_200 : std_logic;
   signal clk_125 : std_logic;
-  signal clk_100 : std_logic;
   signal sys_rst : std_logic;
   signal clk_loc : std_logic;
 
-  component clk_wiz_1 is
+  component adc_clock is
     port (
       clk_in1_p : in  std_logic;        -- clk_ab_p
       clk_in1_n : in  std_logic;        -- clk_ab_n
       clk_out1  : out std_logic;        -- clk_adc
       reset     : in  std_logic;        -- cpu_rst
       locked    : out std_logic);
-  end component clk_wiz_1;
+  end component adc_clock;
 
   signal clk_adc : std_logic;
   signal adc_rst : std_logic;
@@ -152,43 +151,43 @@ architecture Behavioral of rhea is
 
   component adc_snapshot is
     port (
-      clk        : in  std_logic;
-      rst        : in  std_logic;
-      trg        : in  std_logic;
-      adc_data_a : in  std_logic_vector(13 downto 0);
-      adc_data_b : in  std_logic_vector(13 downto 0);
-      dout       : out std_logic_vector(7 downto 0);
-      fifo_wr_en : out std_logic;
-      busy       : out std_logic;
-      ack        : out std_logic);
+      clk           : in     std_logic;
+      rst           : in     std_logic;
+      en            : in     std_logic;
+      fmt_busy      : in     std_logic;
+      adc_data_a    : in     std_logic_vector(13 downto 0);
+      adc_data_b    : in     std_logic_vector(13 downto 0);
+      wr_data_count : in     std_logic_vector(16 downto 0);
+      dout          : out    byte_array(3 downto 0);
+      rd_en         : buffer std_logic;
+      ack           : out    std_logic);
   end component adc_snapshot;
 
   signal adc_ss_trg  : std_logic;
-  signal adc_ss_data : std_logic_vector(7 downto 0);
-  signal adc_ss_busy : std_logic;
   signal adc_ss_ack  : std_logic;
+  signal adc_ss_data : byte_array(3 downto 0);
 
---  component data_format is
---    generic (
---      ts_size : integer;                -- bytes
---      d_size  : integer);               -- bytes
---    port (
---      clk              : in  std_logic;
---      rst              : in  std_logic;
---      wr_en               : in  std_logic;
---      ts               : in  std_logic_vector(ts_size*8-1 downto 0);
---      fifo_almost_full : in  std_logic;
---      fifo_wr_en       : out std_logic;
---      busy             : out std_logic;
---      ack              : out std_logic;
---      dout             : out std_logic_vector(7 downto 0));
---  end component data_format;
+  component formatter is
+    generic (
+      d_size : integer);                -- bytes
+    port (
+      clk              : in     std_logic;
+      rst              : in     std_logic;
+      ts_rst           : in     std_logic;
+      en               : in     std_logic;
+--      fifo_almost_full : in     std_logic;
+      din              : in     byte_array(d_size-1 downto 0);
+      fifo_wr_en       : out    std_logic;
+      busy             : out    std_logic;
+      ack              : buffer std_logic;
+      dout             : out    std_logic_vector(7 downto 0));
+  end component formatter;
 
---  signal fmt_en    : std_logic;
---  signal ts_trg    : std_logic;
---  signal fmt_busy  : std_logic;
---  signal fmt_carry : std_logic;
---  signal fmtd      : std_logic_vector(7 downto 0);
+  signal fmt_en   : std_logic;
+  signal fmt_din  : byte_array(d_size-1 downto 0);
+  signal fmt_busy : std_logic;
+  signal fmt_ack  : std_logic;
+  signal fmt_dout : std_logic_vector(7 downto 0);
 
   component data_transfer_to_sitcp is
     port (
@@ -201,12 +200,14 @@ architecture Behavioral of rhea is
       tcp_tx_full      : in  std_logic;
       din              : in  std_logic_vector(7 downto 0);
       tcp_txd          : out std_logic_vector(7 downto 0);
-      tcp_tx_wr        : out std_logic);
+      tcp_tx_wr        : out std_logic;
+      wr_data_count    : out std_logic_vector(16 downto 0));
   end component data_transfer_to_sitcp;
 
   signal fifo_wr_en       : std_logic;
   signal fifo_almost_full : std_logic;
   signal fifo_din         : std_logic_vector(7 downto 0);
+  signal wr_data_count    : std_logic_vector(16 downto 0);
 
   component sitcp is
     port (
@@ -338,18 +339,6 @@ architecture Behavioral of rhea is
   signal spi_busy : std_logic;
   signal spi_rxd  : std_logic_vector(15 downto 0);
 
-  component timestamp is
-    generic (
-      ts_size : integer);
-    port (
-      clk  : in     std_logic;
-      arst : in     std_logic;
-      trg  : in     std_logic;
-      ts   : buffer std_logic_vector(ts_size*8-1 downto 0));
-  end component timestamp;
-
-  signal ts : std_logic_vector(ts_size*8-1 downto 0);
-
   ---------------------------------------------------------------------------
   -- Debug
   ---------------------------------------------------------------------------
@@ -361,17 +350,17 @@ begin
   ---------------------------------------------------------------------------
   -- Clock/Reset
   ---------------------------------------------------------------------------
-  System_Clock : clk_wiz_0
+  System_Clock_inst : system_clock
     port map (
       clk_in1_p => sysclk_p,
       clk_in1_n => sysclk_n,
       clk_out1  => clk_200,
       clk_out2  => clk_125,
-      clk_out3  => clk_100,
+--      clk_out3  => clk_100,
       reset     => cpu_rst,
       locked    => clk_loc);
 
-  ADC_Sample_Clock : clk_wiz_1
+  ADC_Clock_inst : adc_clock
     port map (
       clk_in1_p => clk_ab_p,
       clk_in1_n => clk_ab_n,
@@ -388,14 +377,14 @@ begin
 
   System_Reset : process(clk_200)
   begin
-    if (clk_200'event and clk_200 = '1') then
+    if rising_edge(clk_200) then
       sys_rst <= not clk_loc;
     end if;
   end process;
 
   ADC_Reset : process(clk_adc)
   begin
-    if (clk_adc'event and clk_adc = '1') then
+    if rising_edge(clk_adc) then
       adc_rst <= not adc_loc;
     end if;
   end process;
@@ -412,7 +401,7 @@ begin
       chb_p      => chb_p,
       chb_n      => chb_n,
       adc_data_a => adc_data_a,
-      adc_data_b => adc_data_b);
+      adc_data_b => adc_data_b);  
 
   RSFF_ADC_Register_Reset : rs_ff
     port map (
@@ -426,33 +415,36 @@ begin
   ---------------------------------------------------------------------------
   ADC_Snapshot_int : adc_snapshot
     port map (
-      clk        => clk_adc,
-      rst        => adc_rst,
-      trg        => adc_ss_trg,
-      adc_data_a => adc_data_a,
-      adc_data_b => adc_data_b,
-      dout       => adc_ss_data,
-      fifo_wr_en => fifo_wr_en,
-      busy       => adc_ss_busy,
-      ack        => adc_ss_ack);
+      clk           => clk_adc,
+      rst           => adc_rst,
+      en            => adc_ss_trg,
+      fmt_busy      => fmt_busy,
+      adc_data_a    => adc_data_a,
+      adc_data_b    => adc_data_b,
+      wr_data_count => wr_data_count,
+      dout          => adc_ss_data,
+      rd_en         => fmt_en,
+      ack           => adc_ss_ack);
 
   ---------------------------------------------------------------------------
   -- Data Format for SiTCP
   ---------------------------------------------------------------------------
-  Data_Format_inst : data_format
+  Formatter_inst : formatter
     generic map (
-      ts_size       => ts_size,         -- bytes (5 B)
-      fmt_data_size => fmt_data_size)   -- bytes (1 KB)
+      d_size => d_size)
     port map (
-      clk              => clk_adc,
-      rst              => adc_rst,
-      en               => fmt_en,
-      ts               => ts,
-      fifo_almost_full => fifo_almost_full,
-      fifo_wr_en       => fifo_wr_en,
-      busy             => fmt_busy,
-      ack              => fmt_ack,
-      dout             => fmtd);
+      clk        => clk_adc,
+      rst        => sys_rst,
+      ts_rst     => adc_ss_trg,
+      en         => fmt_en,
+--      fifo_almost_full => fifo_almost_full,
+      din        => fmt_din,
+      fifo_wr_en => fifo_wr_en,
+      busy       => fmt_busy,
+      ack        => fmt_ack,
+      dout       => fifo_din);
+
+  fmt_din <= adc_ss_data;
 
   ---------------------------------------------------------------------------
   -- Data transfer to SiTCP
@@ -468,10 +460,8 @@ begin
       tcp_tx_full      => tcp_tx_full,
       din              => fifo_din,
       tcp_txd          => tcp_txd,
-      tcp_tx_wr        => tcp_tx_wr);
-
-  fifo_din <= adc_ss_data when rbcp_id = x"3" else
-              fmtd;
+      tcp_tx_wr        => tcp_tx_wr,
+      wr_data_count    => wr_data_count);
 
   ---------------------------------------------------------------------------
   -- SiTCP
@@ -546,10 +536,11 @@ begin
                                         -- x"3": ADC Snapshot
                                         --
 
-  spi_req <= rbcp_mdl_req when rbcp_id = x"1" or rbcp_id = x"2" else '0';
-  sft_rst <= rbcp_mdl_req when rbcp_id = x"3"                   else '0';
+  spi_req    <= rbcp_mdl_req when rbcp_id = x"1" or rbcp_id = x"2" else '0';
+  adc_ss_trg <= rbcp_mdl_req when rbcp_id = x"3"                   else '0';
 
-  rbcp_mdl_ack <= spi_ack or sft_rst;
+  sft_rst      <= adc_ss_trg;
+  rbcp_mdl_ack <= spi_ack or adc_ss_ack;
   rbcp_mdl_rxd <= spi_rxd;
 
   ---------------------------------------------------------------------------
@@ -596,14 +587,14 @@ begin
   ---------------------------------------------------------------------------
   -- Timestamp
   ---------------------------------------------------------------------------
-  Timestamp_inst : timestamp
-    generic map (
-      ts_size => ts_size)
-    port map (
-      clk  => clk_adc,
-      arst => sft_rst or adc_rst,
-      trg  => fmt_ack,
-      ts   => ts);
+--  Timestamp_inst : timestamp
+--    generic map (
+--      ts_size => ts_size)
+--    port map (
+--      clk  => clk_adc,
+--      arst => sft_rst or adc_rst,
+--      trg  => fmt_ack,
+--      ts   => ts);
 
   ---------------------------------------------------------------------------
   -- GPIO LED

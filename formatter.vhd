@@ -38,18 +38,17 @@ use work.rhea_pkg.all;
 
 entity formatter is
   generic (
-    d_size : integer := 4);             -- bytes
+    d_size : integer);                  -- bytes
   port (
-    clk              : in     std_logic;
-    rst              : in     std_logic;
-    ts_rst           : in     std_logic;
-    en               : in     std_logic;
-    fifo_almost_full : in     std_logic;
-    din              : in     byte_array(d_size-1 downto 0);
-    fifo_wr_en       : out    std_logic;
-    busy             : out    std_logic;
-    ack              : buffer std_logic;
-    dout             : out    std_logic_vector(7 downto 0));
+    clk        : in     std_logic;
+    rst        : in     std_logic;
+    ts_rst     : in     std_logic;
+    en         : in     std_logic;
+    din        : in     byte_array(d_size-1 downto 0);
+    fifo_wr_en : out    std_logic;
+    busy       : out    std_logic;
+    ack        : buffer std_logic;
+    dout       : out    std_logic_vector(7 downto 0));
 end entity formatter;
 
 architecture Behavioral of formatter is
@@ -73,13 +72,13 @@ begin
   fmt_data(fmt_data_size-2 downto 6) <= din_buf;  -- data
   fmt_data(fmt_data_size-1)          <= x"ee";    -- footer
 
-  fifo_wr_en <= '1' when s_fmt = exec                            else '0';
-  ack        <= '1' when s_fmt = fini                            else '0';
-  busy       <= '1' when s_fmt /= idle or fifo_almost_full = '1' else '0';
+  fifo_wr_en <= '1' when s_fmt = exec  else '0';
+  ack        <= '1' when s_fmt = fini  else '0';
+  busy       <= '1' when s_fmt /= idle else '0';
 
   dout <= fmt_data(cnt);
 
-  process(clk)
+  Formatter_SM : process(clk)
   begin
     if rising_edge(clk) then
       if rst = '1' then
@@ -90,13 +89,14 @@ begin
           when idle =>
             cnt <= 0;
             if en = '1' then
-              din_buf <= din;
-              s_fmt   <= init;
+              s_fmt <= init;
             else
               s_fmt <= idle;
             end if;
 
-          when init => s_fmt <= exec;
+          when init =>
+            din_buf <= din;
+            s_fmt   <= exec;
 
           when exec =>
             if cnt = fmt_data_size-1 then
@@ -117,7 +117,7 @@ begin
     ts(4-i) <= ts_buf(8*i+7 downto 8*i);
   end generate Timestamp_gen;
 
-  process(ts_rst, clk)
+  Timestampe_proc : process(ts_rst, clk)
   begin
     if ts_rst = '1' then
       ts_buf <= (others => '0');
