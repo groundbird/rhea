@@ -63,7 +63,7 @@ begin
 
   RBCP_SM_proc : process(clk)
   begin
-    if (clk'event and clk = '1') then
+    if rising_edge(clk) then
       if rst = '1' then
         s_rbcp   <= init;
         rbcp_ack <= '0';

@@ -102,7 +102,6 @@ architecture Behavioral of rhea is
   end component falling_edge_detector;
 
   signal spi_ack : std_logic;
---  signal fmt_ack : std_logic;
 
   component system_clock is
     port (
@@ -110,7 +109,6 @@ architecture Behavioral of rhea is
       clk_in1_n : in  std_logic;        -- sysclk_n
       clk_out1  : out std_logic;        -- 200 MHz
       clk_out2  : out std_logic;        -- 125 MHz for SiTCP
---      clk_out3  : out std_logic;        -- 100 MHz
       reset     : in  std_logic;        -- cpu_rst
       locked    : out std_logic);
   end component system_clock;
@@ -171,16 +169,15 @@ architecture Behavioral of rhea is
     generic (
       d_size : integer);                -- bytes
     port (
-      clk              : in     std_logic;
-      rst              : in     std_logic;
-      ts_rst           : in     std_logic;
-      en               : in     std_logic;
---      fifo_almost_full : in     std_logic;
-      din              : in     byte_array(d_size-1 downto 0);
-      fifo_wr_en       : out    std_logic;
-      busy             : out    std_logic;
-      ack              : buffer std_logic;
-      dout             : out    std_logic_vector(7 downto 0));
+      clk        : in     std_logic;
+      rst        : in     std_logic;
+      ts_rst     : in     std_logic;
+      en         : in     std_logic;
+      din        : in     byte_array(d_size-1 downto 0);
+      fifo_wr_en : out    std_logic;
+      busy       : out    std_logic;
+      ack        : buffer std_logic;
+      dout       : out    std_logic_vector(7 downto 0));
   end component formatter;
 
   signal fmt_en   : std_logic;
@@ -339,6 +336,28 @@ architecture Behavioral of rhea is
   signal spi_busy : std_logic;
   signal spi_rxd  : std_logic_vector(15 downto 0);
 
+  component dds is
+    port (
+      clk   : in  std_logic;
+      rst   : in  std_logic;
+      en    : in  std_logic;
+      pinc  : in  std_logic_vector(31 downto 0);
+      valid : out std_logic;
+      cos   : out std_logic_vector(15 downto 0);
+      sin   : out std_logic_vector(15 downto 0);
+      busy  : out std_logic;
+      ack   : out std_logic);
+  end component dds;
+
+  signal dds_en    : std_logic;
+  signal dds_rst   : std_logic;
+  signal pinc      : std_logic_vector(31 downto 0);
+  signal dds_valid : std_logic;
+  signal cos       : std_logic_vector(15 downto 0);
+  signal sin       : std_logic_vector(15 downto 0);
+  signal dds_busy  : std_logic;
+  signal dds_ack   : std_logic;
+
   ---------------------------------------------------------------------------
   -- Debug
   ---------------------------------------------------------------------------
@@ -356,7 +375,6 @@ begin
       clk_in1_n => sysclk_n,
       clk_out1  => clk_200,
       clk_out2  => clk_125,
---      clk_out3  => clk_100,
       reset     => cpu_rst,
       locked    => clk_loc);
 
@@ -371,7 +389,7 @@ begin
   RSFF_CPU_Reset : rs_ff
     port map (
       r  => cpu_reset,
-      s  => not cpu_reset,
+      s  => "not"(cpu_reset),
       q  => open,
       qb => cpu_rst);
 
@@ -406,7 +424,7 @@ begin
   RSFF_ADC_Register_Reset : rs_ff
     port map (
       r  => gpio_sw_c,
-      s  => not gpio_sw_c,
+      s  => "not"(gpio_sw_c),
       q  => open,
       qb => adc_reset25);
 
@@ -437,7 +455,6 @@ begin
       rst        => sys_rst,
       ts_rst     => adc_ss_trg,
       en         => fmt_en,
---      fifo_almost_full => fifo_almost_full,
       din        => fmt_din,
       fifo_wr_en => fifo_wr_en,
       busy       => fmt_busy,
@@ -504,8 +521,6 @@ begin
       rbcp_ack       => rbcp_ack,
       rbcp_rd        => rbcp_rd);
 
-  gmii_1000m <= gpio_dip_sw(0);         -- (0: 100MbE, 1: GbE)
-
   ---------------------------------------------------------------------------
   -- RBCP
   ---------------------------------------------------------------------------
@@ -534,13 +549,15 @@ begin
                                         -- x"1": ADC Register
                                         -- x"2": DAC Register
                                         -- x"3": ADC Snapshot
+                                        -- x"4": Set Frequency
                                         --
 
   spi_req    <= rbcp_mdl_req when rbcp_id = x"1" or rbcp_id = x"2" else '0';
   adc_ss_trg <= rbcp_mdl_req when rbcp_id = x"3"                   else '0';
+  dds_en     <= rbcp_mdl_req when rbcp_id = x"4"                   else '0';
 
   sft_rst      <= adc_ss_trg;
-  rbcp_mdl_ack <= spi_ack or adc_ss_ack;
+  rbcp_mdl_ack <= spi_ack or adc_ss_ack or dds_ack;
   rbcp_mdl_rxd <= spi_rxd;
 
   ---------------------------------------------------------------------------
@@ -585,26 +602,37 @@ begin
       q   => spi_ack);
 
   ---------------------------------------------------------------------------
-  -- Timestamp
+  -- DDS
   ---------------------------------------------------------------------------
---  Timestamp_inst : timestamp
---    generic map (
---      ts_size => ts_size)
---    port map (
---      clk  => clk_adc,
---      arst => sft_rst or adc_rst,
---      trg  => fmt_ack,
---      ts   => ts);
+  DDS_inst : dds
+    port map (
+      clk   => clk_200,
+      rst   => sys_rst,
+      en    => dds_en,
+      pinc  => pinc,
+      valid => dds_valid,
+      cos   => cos,
+      sin   => sin,
+      busy  => dds_busy,
+      ack   => dds_ack);
 
   ---------------------------------------------------------------------------
   -- GPIO LED
   ---------------------------------------------------------------------------
-  gpio_led(0) <= gmii_1000m;
-  gpio_led(1) <= tcp_tx_full;
+--  gpio_led(0) <= gmii_1000m;
+--  gpio_led(1) <= tcp_tx_full;
+
+  ---------------------------------------------------------------------------
+  -- GPIO Dip Switch
+  ---------------------------------------------------------------------------
+  gmii_1000m <= gpio_dip_sw(0);         -- (0: 100MbE, 1: GbE)
 
   ---------------------------------------------------------------------------
   -- Debug
   ---------------------------------------------------------------------------
+  gpio_led <= adc_data_a(13 downto 6) when gpio_dip_sw(3) = '0' else
+              adc_data_b(13 downto 6);  -- ADC
+
   process(clk_adc)
   begin
     if (clk_adc'event and clk_adc = '1') then
