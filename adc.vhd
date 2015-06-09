@@ -33,15 +33,15 @@ use UNISIM.VComponents.all;
 
 entity adc is
   port (
-    clk        : in  std_logic;
-    rst        : in  std_logic;
-    -- ADC I/O
-    cha_p      : in  std_logic_vector(6 downto 0);
-    cha_n      : in  std_logic_vector(6 downto 0);
-    chb_p      : in  std_logic_vector(6 downto 0);
-    chb_n      : in  std_logic_vector(6 downto 0);
-    adc_data_a : out std_logic_vector(13 downto 0);
-    adc_data_b : out std_logic_vector(13 downto 0));
+    clk    : in  std_logic;
+    rst    : in  std_logic;
+    -- ADC4249 I/O
+    cha_p  : in  std_logic_vector(6 downto 0);
+    cha_n  : in  std_logic_vector(6 downto 0);
+    chb_p  : in  std_logic_vector(6 downto 0);
+    chb_n  : in  std_logic_vector(6 downto 0);
+    dout_a : out std_logic_vector(13 downto 0);
+    dout_b : out std_logic_vector(13 downto 0));
 end adc;
 
 architecture Behavioral of adc is
@@ -49,19 +49,7 @@ architecture Behavioral of adc is
   signal a_ddr : std_logic_vector(6 downto 0);
   signal b_ddr : std_logic_vector(6 downto 0);
 
-  -- tune the timing violations
---  signal rst_buf  : std_logic;
---  signal rst_buf2 : std_logic;
-
 begin
-
---  Timing_Buffer_for_ADC_Reset : process(clk)
---  begin
---    if rising_edge(clk) then
---      rst_buf2 <= rst;
---      rst_buf  <= rst_buf2;
---    end if;
---  end process;
 
   ADC_Data : for i in 0 to 6 generate
     Channel_A_IBUFDS_inst : IBUFDS
@@ -91,8 +79,8 @@ begin
         INIT_Q2      => '0',
         SRTYPE       => "ASYNC")
       port map (
-        Q1 => adc_data_a(2*i),
-        Q2 => adc_data_a(2*i+1),
+        Q1 => dout_a(2*i),
+        Q2 => dout_a(2*i+1),
         C  => clk,
         CE => '1',
         D  => a_ddr(i),
@@ -106,8 +94,8 @@ begin
         INIT_Q2      => '0',
         SRTYPE       => "ASYNC")
       port map (
-        Q1 => adc_data_b(2*i),
-        Q2 => adc_data_b(2*i+1),
+        Q1 => dout_b(2*i),
+        Q2 => dout_b(2*i+1),
         C  => clk,
         CE => '1',
         D  => b_ddr(i),

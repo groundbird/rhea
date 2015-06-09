@@ -54,7 +54,8 @@
 --  Output     Output      Phase    Duty Cycle   Pk-to-Pk     Phase
 --   Clock     Freq (MHz)  (degrees)    (%)     Jitter (ps)  Error (ps)
 ------------------------------------------------------------------------------
--- CLK_OUT1___200.000______0.000______50.0_______98.146_____89.971
+-- CLK_OUT1___200.000______0.000______50.0______100.010_____97.786
+-- CLK_OUT2___400.000______0.000______50.0_______87.396_____97.786
 --
 ------------------------------------------------------------------------------
 -- Input Clock   Freq (MHz)    Input Jitter (UI)
@@ -71,6 +72,7 @@ port
   clk_in1_n         : in     std_logic;
   -- Clock out ports
   clk_out1          : out    std_logic;
+  clk_out2          : out    std_logic;
   -- Status and control signals
   reset             : in     std_logic;
   locked            : out    std_logic
@@ -82,7 +84,7 @@ ATTRIBUTE SYN_BLACK_BOX OF adc_clock : COMPONENT IS TRUE;
 
 
 ATTRIBUTE BLACK_BOX_PAD_PIN : STRING;
-ATTRIBUTE BLACK_BOX_PAD_PIN OF adc_clock : COMPONENT IS "clk_in1_p,clk_in1_n,clk_out1,reset,locked";
+ATTRIBUTE BLACK_BOX_PAD_PIN OF adc_clock : COMPONENT IS "clk_in1_p,clk_in1_n,clk_out1,clk_out2,reset,locked";
 
 -- COMP_TAG_END ------ End COMPONENT Declaration ------------
 -- The following code must appear in the VHDL architecture
@@ -96,6 +98,7 @@ your_instance_name : adc_clock
    clk_in1_n => clk_in1_n,
   -- Clock out ports  
    clk_out1 => clk_out1,
+   clk_out2 => clk_out2,
   -- Status and control signals                
    reset => reset,
    locked => locked            

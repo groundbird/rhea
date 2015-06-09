@@ -55,7 +55,8 @@
 --  Output     Output      Phase    Duty Cycle   Pk-to-Pk     Phase
 --   Clock     Freq (MHz)  (degrees)    (%)     Jitter (ps)  Error (ps)
 ------------------------------------------------------------------------------
--- CLK_OUT1___200.000______0.000______50.0_______98.146_____89.971
+-- CLK_OUT1___200.000______0.000______50.0______100.010_____97.786
+-- CLK_OUT2___400.000______0.000______50.0_______87.396_____97.786
 --
 ------------------------------------------------------------------------------
 -- Input Clock   Freq (MHz)    Input Jitter (UI)
@@ -78,6 +79,7 @@ port
   clk_in1_n         : in     std_logic;
   -- Clock out ports
   clk_out1          : out    std_logic;
+  clk_out2          : out    std_logic;
   -- Status and control signals
   reset             : in     std_logic;
   locked            : out    std_logic
@@ -86,7 +88,7 @@ end adc_clock;
 
 architecture xilinx of adc_clock is
   attribute CORE_GENERATION_INFO : string;
-  attribute CORE_GENERATION_INFO of xilinx : architecture is "adc_clock,clk_wiz_v5_1,{component_name=adc_clock,use_phase_alignment=true,use_min_o_jitter=false,use_max_i_jitter=false,use_dyn_phase_shift=false,use_inclk_switchover=false,use_dyn_reconfig=false,enable_axi=0,feedback_source=FDBK_AUTO,PRIMITIVE=MMCM,num_out_clk=1,clkin1_period=5.0,clkin2_period=10.0,use_power_down=false,use_reset=true,use_locked=true,use_inclk_stopped=false,feedback_type=SINGLE,CLOCK_MGR_TYPE=NA,manual_override=false}";
+  attribute CORE_GENERATION_INFO of xilinx : architecture is "adc_clock,clk_wiz_v5_1,{component_name=adc_clock,use_phase_alignment=true,use_min_o_jitter=false,use_max_i_jitter=false,use_dyn_phase_shift=false,use_inclk_switchover=false,use_dyn_reconfig=false,enable_axi=0,feedback_source=FDBK_AUTO,PRIMITIVE=MMCM,num_out_clk=2,clkin1_period=5.0,clkin2_period=10.0,use_power_down=false,use_reset=true,use_locked=true,use_inclk_stopped=false,feedback_type=SINGLE,CLOCK_MGR_TYPE=NA,manual_override=false}";
 
 component adc_clock_clk_wiz
 port
@@ -95,6 +97,7 @@ port
   clk_in1_n         : in     std_logic;
   -- Clock out ports
   clk_out1          : out    std_logic;
+  clk_out2          : out    std_logic;
   -- Status and control signals
   reset             : in     std_logic;
   locked            : out    std_logic
@@ -111,6 +114,7 @@ begin
    clk_in1_n => clk_in1_n,
   -- Clock out ports  
    clk_out1 => clk_out1,
+   clk_out2 => clk_out2,
   -- Status and control signals                
    reset => reset,
    locked => locked            

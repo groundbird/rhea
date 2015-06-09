@@ -55,7 +55,8 @@
 --  Output     Output      Phase    Duty Cycle   Pk-to-Pk     Phase
 --   Clock     Freq (MHz)  (degrees)    (%)     Jitter (ps)  Error (ps)
 ------------------------------------------------------------------------------
--- CLK_OUT1___200.000______0.000______50.0_______98.146_____89.971
+-- CLK_OUT1___200.000______0.000______50.0______100.010_____97.786
+-- CLK_OUT2___400.000______0.000______50.0_______87.396_____97.786
 --
 ------------------------------------------------------------------------------
 -- Input Clock   Freq (MHz)    Input Jitter (UI)
@@ -78,6 +79,7 @@ port
   clk_in1_n         : in     std_logic;
   -- Clock out ports
   clk_out1          : out    std_logic;
+  clk_out2          : out    std_logic;
   -- Status and control signals
   reset             : in     std_logic;
   locked            : out    std_logic
@@ -93,7 +95,7 @@ architecture xilinx of adc_clock_clk_wiz is
   signal clkfboutb_unused : std_logic;
   signal clk_out1_adc_clock          : std_logic;
   signal clkout0b_unused         : std_logic;
-  signal clkout1_unused   : std_logic;
+  signal clk_out2_adc_clock          : std_logic;
   signal clkout1b_unused         : std_logic;
   signal clkout2_unused   : std_logic;
   signal clkout2b_unused         : std_logic;
@@ -138,13 +140,17 @@ begin
     COMPENSATION         => "ZHOLD",
     STARTUP_WAIT         => FALSE,
     DIVCLK_DIVIDE        => 1,
-    CLKFBOUT_MULT_F      => 5.000,
+    CLKFBOUT_MULT_F      => 4.000,
     CLKFBOUT_PHASE       => 0.000,
     CLKFBOUT_USE_FINE_PS => FALSE,
-    CLKOUT0_DIVIDE_F     => 5.000,
+    CLKOUT0_DIVIDE_F     => 4.000,
     CLKOUT0_PHASE        => 0.000,
     CLKOUT0_DUTY_CYCLE   => 0.500,
     CLKOUT0_USE_FINE_PS  => FALSE,
+    CLKOUT1_DIVIDE       => 2,
+    CLKOUT1_PHASE        => 0.000,
+    CLKOUT1_DUTY_CYCLE   => 0.500,
+    CLKOUT1_USE_FINE_PS  => FALSE,
     CLKIN1_PERIOD        => 5.0,
     REF_JITTER1          => 0.010)
   port map
@@ -154,7 +160,7 @@ begin
     CLKFBOUTB           => clkfboutb_unused,
     CLKOUT0             => clk_out1_adc_clock,
     CLKOUT0B            => clkout0b_unused,
-    CLKOUT1             => clkout1_unused,
+    CLKOUT1             => clk_out2_adc_clock,
     CLKOUT1B            => clkout1b_unused,
     CLKOUT2             => clkout2_unused,
     CLKOUT2B            => clkout2b_unused,
@@ -208,5 +214,10 @@ begin
     I   => clk_out1_adc_clock);
 
 
+
+  clkout2_buf : BUFG
+  port map
+   (O   => clk_out2,
+    I   => clk_out2_adc_clock);
 
 end xilinx;

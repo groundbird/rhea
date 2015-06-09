@@ -1,10 +1,10 @@
 // Copyright 1986-2014 Xilinx, Inc. All Rights Reserved.
 // --------------------------------------------------------------------------------
 // Tool Version: Vivado v.2014.2 (win64) Build 932637 Wed Jun 11 13:33:10 MDT 2014
-// Date        : Tue Jun 02 09:34:33 2015
+// Date        : Tue Jun 09 13:23:35 2015
 // Host        : rhea running 64-bit Service Pack 1  (build 7601)
 // Command     : write_verilog -force -mode funcsim
-//               c:/Users/hikaru/readout/rhea/project_3/project_3.srcs/sources_1/ip/adc_clock/adc_clock_funcsim.v
+//               C:/Users/hikaru/readout/rhea/project_3/project_3.srcs/sources_1/ip/adc_clock/adc_clock_funcsim.v
 // Design      : adc_clock
 // Purpose     : This verilog netlist is a functional simulation representation of the design and should not be modified
 //               or synthesized. This netlist cannot be used for SDF annotated simulation.
@@ -12,23 +12,26 @@
 // --------------------------------------------------------------------------------
 `timescale 1 ps / 1 ps
 
-(* core_generation_info = "adc_clock,clk_wiz_v5_1,{component_name=adc_clock,use_phase_alignment=true,use_min_o_jitter=false,use_max_i_jitter=false,use_dyn_phase_shift=false,use_inclk_switchover=false,use_dyn_reconfig=false,enable_axi=0,feedback_source=FDBK_AUTO,PRIMITIVE=MMCM,num_out_clk=1,clkin1_period=5.0,clkin2_period=10.0,use_power_down=false,use_reset=true,use_locked=true,use_inclk_stopped=false,feedback_type=SINGLE,CLOCK_MGR_TYPE=NA,manual_override=false}" *) 
+(* core_generation_info = "adc_clock,clk_wiz_v5_1,{component_name=adc_clock,use_phase_alignment=true,use_min_o_jitter=false,use_max_i_jitter=false,use_dyn_phase_shift=false,use_inclk_switchover=false,use_dyn_reconfig=false,enable_axi=0,feedback_source=FDBK_AUTO,PRIMITIVE=MMCM,num_out_clk=2,clkin1_period=5.0,clkin2_period=10.0,use_power_down=false,use_reset=true,use_locked=true,use_inclk_stopped=false,feedback_type=SINGLE,CLOCK_MGR_TYPE=NA,manual_override=false}" *) 
 (* NotValidForBitStream *)
 module adc_clock
    (clk_in1_p,
     clk_in1_n,
     clk_out1,
+    clk_out2,
     reset,
     locked);
   input clk_in1_p;
   input clk_in1_n;
   output clk_out1;
+  output clk_out2;
   input reset;
   output locked;
 
 (* DIFF_TERM=0 *) (* IBUF_LOW_PWR *)   wire clk_in1_n;
 (* DIFF_TERM=0 *) (* IBUF_LOW_PWR *)   wire clk_in1_p;
   wire clk_out1;
+  wire clk_out2;
   wire locked;
   wire reset;
 
@@ -36,6 +39,7 @@ adc_clock_adc_clock_clk_wiz U0
        (.clk_in1_n(clk_in1_n),
         .clk_in1_p(clk_in1_p),
         .clk_out1(clk_out1),
+        .clk_out2(clk_out2),
         .locked(locked),
         .reset(reset));
 endmodule
@@ -45,11 +49,13 @@ module adc_clock_adc_clock_clk_wiz
    (clk_in1_p,
     clk_in1_n,
     clk_out1,
+    clk_out2,
     reset,
     locked);
   input clk_in1_p;
   input clk_in1_n;
   output clk_out1;
+  output clk_out2;
   input reset;
   output locked;
 
@@ -58,6 +64,8 @@ module adc_clock_adc_clock_clk_wiz
 (* DIFF_TERM=0 *) (* IBUF_LOW_PWR *)   wire clk_in1_p;
   wire clk_out1;
   wire clk_out1_adc_clock;
+  wire clk_out2;
+  wire clk_out2_adc_clock;
   wire clkfbout_adc_clock;
   wire clkfbout_buf_adc_clock;
   wire locked;
@@ -66,7 +74,6 @@ module adc_clock_adc_clock_clk_wiz
   wire NLW_mmcm_adv_inst_CLKFBSTOPPED_UNCONNECTED;
   wire NLW_mmcm_adv_inst_CLKINSTOPPED_UNCONNECTED;
   wire NLW_mmcm_adv_inst_CLKOUT0B_UNCONNECTED;
-  wire NLW_mmcm_adv_inst_CLKOUT1_UNCONNECTED;
   wire NLW_mmcm_adv_inst_CLKOUT1B_UNCONNECTED;
   wire NLW_mmcm_adv_inst_CLKOUT2_UNCONNECTED;
   wire NLW_mmcm_adv_inst_CLKOUT2B_UNCONNECTED;
@@ -99,18 +106,22 @@ module adc_clock_adc_clock_clk_wiz
        (.I(clk_out1_adc_clock),
         .O(clk_out1));
 (* box_type = "PRIMITIVE" *) 
+   BUFG clkout2_buf
+       (.I(clk_out2_adc_clock),
+        .O(clk_out2));
+(* box_type = "PRIMITIVE" *) 
    MMCME2_ADV #(
     .BANDWIDTH("OPTIMIZED"),
-    .CLKFBOUT_MULT_F(5.000000),
+    .CLKFBOUT_MULT_F(4.000000),
     .CLKFBOUT_PHASE(0.000000),
     .CLKFBOUT_USE_FINE_PS("FALSE"),
     .CLKIN1_PERIOD(5.000000),
     .CLKIN2_PERIOD(0.000000),
-    .CLKOUT0_DIVIDE_F(5.000000),
+    .CLKOUT0_DIVIDE_F(4.000000),
     .CLKOUT0_DUTY_CYCLE(0.500000),
     .CLKOUT0_PHASE(0.000000),
     .CLKOUT0_USE_FINE_PS("FALSE"),
-    .CLKOUT1_DIVIDE(1),
+    .CLKOUT1_DIVIDE(2),
     .CLKOUT1_DUTY_CYCLE(0.500000),
     .CLKOUT1_PHASE(0.000000),
     .CLKOUT1_USE_FINE_PS("FALSE"),
@@ -159,7 +170,7 @@ module adc_clock_adc_clock_clk_wiz
         .CLKINSTOPPED(NLW_mmcm_adv_inst_CLKINSTOPPED_UNCONNECTED),
         .CLKOUT0(clk_out1_adc_clock),
         .CLKOUT0B(NLW_mmcm_adv_inst_CLKOUT0B_UNCONNECTED),
-        .CLKOUT1(NLW_mmcm_adv_inst_CLKOUT1_UNCONNECTED),
+        .CLKOUT1(clk_out2_adc_clock),
         .CLKOUT1B(NLW_mmcm_adv_inst_CLKOUT1B_UNCONNECTED),
         .CLKOUT2(NLW_mmcm_adv_inst_CLKOUT2_UNCONNECTED),
         .CLKOUT2B(NLW_mmcm_adv_inst_CLKOUT2B_UNCONNECTED),

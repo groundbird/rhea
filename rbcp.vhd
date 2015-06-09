@@ -51,7 +51,7 @@ entity rbcp is
     ack       : in  std_logic;
     rxd       : in  std_logic_vector(d_width-1 downto 0);
     spi_txd   : out std_logic_vector(d_width-1 downto 0);
-    sft_rst   : out std_logic);
+    dds_pinc  : out std_logic_vector(31 downto 0));
 end rbcp;
 
 architecture Behavioral of rbcp is
@@ -109,9 +109,10 @@ begin
 
   process(clk)
   begin
-    if (clk'event and clk = '1') then
+    if rising_edge(clk) then
       if rst = '1' then
-        spi_txd <= (others => '0');
+        spi_txd  <= (others => '0');
+        dds_pinc <= (others => '0');
       else
         case rbcp_addr(31 downto 24) is
           -- ADC/DAC register control
@@ -131,6 +132,19 @@ begin
 --          when x"30" => sft_rst_buf <= '1';
 --          when x"31" => sft_rst_buf <= '0';
 
+          when x"40" =>                 -- Set Frequency for DDS
+            case rbcp_addr(3 downto 0) is
+              when x"0"   => dds_pinc(31 downto 24) <= rbcp_wd;
+              when x"1"   => dds_pinc(23 downto 16) <= rbcp_wd;
+              when x"2"   => dds_pinc(15 downto 8)  <= rbcp_wd;
+              when x"3"   => dds_pinc(7 downto 0)   <= rbcp_wd;
+              when others => null;
+            end case;
+--            dds_pinc(31 downto 24) <= rbcp_wd;
+--            dds_pinc(23 downto 16) <= rbcp_wd;
+--            dds_pinc(15 downto 8)  <= rbcp_wd;
+--            dds_pinc(7 downto 0)   <= rbcp_wd;
+            
           when others => null;
         end case;
       end if;

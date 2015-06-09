@@ -1,10 +1,10 @@
 -- Copyright 1986-2014 Xilinx, Inc. All Rights Reserved.
 -- --------------------------------------------------------------------------------
 -- Tool Version: Vivado v.2014.2 (win64) Build 932637 Wed Jun 11 13:33:10 MDT 2014
--- Date        : Tue Jun 02 09:34:33 2015
+-- Date        : Tue Jun 09 13:23:35 2015
 -- Host        : rhea running 64-bit Service Pack 1  (build 7601)
 -- Command     : write_vhdl -force -mode funcsim
---               c:/Users/hikaru/readout/rhea/project_3/project_3.srcs/sources_1/ip/adc_clock/adc_clock_funcsim.vhdl
+--               C:/Users/hikaru/readout/rhea/project_3/project_3.srcs/sources_1/ip/adc_clock/adc_clock_funcsim.vhdl
 -- Design      : adc_clock
 -- Purpose     : This VHDL netlist is a functional simulation representation of the design and should not be modified or
 --               synthesized. This netlist cannot be used for SDF annotated simulation.
@@ -19,6 +19,7 @@ entity adc_clock_adc_clock_clk_wiz is
     clk_in1_p : in STD_LOGIC;
     clk_in1_n : in STD_LOGIC;
     clk_out1 : out STD_LOGIC;
+    clk_out2 : out STD_LOGIC;
     reset : in STD_LOGIC;
     locked : out STD_LOGIC
   );
@@ -29,13 +30,13 @@ end adc_clock_adc_clock_clk_wiz;
 architecture STRUCTURE of adc_clock_adc_clock_clk_wiz is
   signal clk_in1_adc_clock : STD_LOGIC;
   signal clk_out1_adc_clock : STD_LOGIC;
+  signal clk_out2_adc_clock : STD_LOGIC;
   signal clkfbout_adc_clock : STD_LOGIC;
   signal clkfbout_buf_adc_clock : STD_LOGIC;
   signal NLW_mmcm_adv_inst_CLKFBOUTB_UNCONNECTED : STD_LOGIC;
   signal NLW_mmcm_adv_inst_CLKFBSTOPPED_UNCONNECTED : STD_LOGIC;
   signal NLW_mmcm_adv_inst_CLKINSTOPPED_UNCONNECTED : STD_LOGIC;
   signal NLW_mmcm_adv_inst_CLKOUT0B_UNCONNECTED : STD_LOGIC;
-  signal NLW_mmcm_adv_inst_CLKOUT1_UNCONNECTED : STD_LOGIC;
   signal NLW_mmcm_adv_inst_CLKOUT1B_UNCONNECTED : STD_LOGIC;
   signal NLW_mmcm_adv_inst_CLKOUT2_UNCONNECTED : STD_LOGIC;
   signal NLW_mmcm_adv_inst_CLKOUT2B_UNCONNECTED : STD_LOGIC;
@@ -57,6 +58,7 @@ architecture STRUCTURE of adc_clock_adc_clock_clk_wiz is
   attribute IFD_DELAY_VALUE of clkin1_ibufgds : label is "AUTO";
   attribute box_type of clkin1_ibufgds : label is "PRIMITIVE";
   attribute box_type of clkout1_buf : label is "PRIMITIVE";
+  attribute box_type of clkout2_buf : label is "PRIMITIVE";
   attribute box_type of mmcm_adv_inst : label is "PRIMITIVE";
 begin
 clkf_buf: unisim.vcomponents.BUFG
@@ -79,19 +81,24 @@ clkout1_buf: unisim.vcomponents.BUFG
       I => clk_out1_adc_clock,
       O => clk_out1
     );
+clkout2_buf: unisim.vcomponents.BUFG
+    port map (
+      I => clk_out2_adc_clock,
+      O => clk_out2
+    );
 mmcm_adv_inst: unisim.vcomponents.MMCME2_ADV
     generic map(
       BANDWIDTH => "OPTIMIZED",
-      CLKFBOUT_MULT_F => 5.000000,
+      CLKFBOUT_MULT_F => 4.000000,
       CLKFBOUT_PHASE => 0.000000,
       CLKFBOUT_USE_FINE_PS => false,
       CLKIN1_PERIOD => 5.000000,
       CLKIN2_PERIOD => 0.000000,
-      CLKOUT0_DIVIDE_F => 5.000000,
+      CLKOUT0_DIVIDE_F => 4.000000,
       CLKOUT0_DUTY_CYCLE => 0.500000,
       CLKOUT0_PHASE => 0.000000,
       CLKOUT0_USE_FINE_PS => false,
-      CLKOUT1_DIVIDE => 1,
+      CLKOUT1_DIVIDE => 2,
       CLKOUT1_DUTY_CYCLE => 0.500000,
       CLKOUT1_PHASE => 0.000000,
       CLKOUT1_USE_FINE_PS => false,
@@ -141,7 +148,7 @@ mmcm_adv_inst: unisim.vcomponents.MMCME2_ADV
       CLKINSTOPPED => NLW_mmcm_adv_inst_CLKINSTOPPED_UNCONNECTED,
       CLKOUT0 => clk_out1_adc_clock,
       CLKOUT0B => NLW_mmcm_adv_inst_CLKOUT0B_UNCONNECTED,
-      CLKOUT1 => NLW_mmcm_adv_inst_CLKOUT1_UNCONNECTED,
+      CLKOUT1 => clk_out2_adc_clock,
       CLKOUT1B => NLW_mmcm_adv_inst_CLKOUT1B_UNCONNECTED,
       CLKOUT2 => NLW_mmcm_adv_inst_CLKOUT2_UNCONNECTED,
       CLKOUT2B => NLW_mmcm_adv_inst_CLKOUT2B_UNCONNECTED,
@@ -196,13 +203,14 @@ entity adc_clock is
     clk_in1_p : in STD_LOGIC;
     clk_in1_n : in STD_LOGIC;
     clk_out1 : out STD_LOGIC;
+    clk_out2 : out STD_LOGIC;
     reset : in STD_LOGIC;
     locked : out STD_LOGIC
   );
   attribute NotValidForBitStream : boolean;
   attribute NotValidForBitStream of adc_clock : entity is true;
   attribute core_generation_info : string;
-  attribute core_generation_info of adc_clock : entity is "adc_clock,clk_wiz_v5_1,{component_name=adc_clock,use_phase_alignment=true,use_min_o_jitter=false,use_max_i_jitter=false,use_dyn_phase_shift=false,use_inclk_switchover=false,use_dyn_reconfig=false,enable_axi=0,feedback_source=FDBK_AUTO,PRIMITIVE=MMCM,num_out_clk=1,clkin1_period=5.0,clkin2_period=10.0,use_power_down=false,use_reset=true,use_locked=true,use_inclk_stopped=false,feedback_type=SINGLE,CLOCK_MGR_TYPE=NA,manual_override=false}";
+  attribute core_generation_info of adc_clock : entity is "adc_clock,clk_wiz_v5_1,{component_name=adc_clock,use_phase_alignment=true,use_min_o_jitter=false,use_max_i_jitter=false,use_dyn_phase_shift=false,use_inclk_switchover=false,use_dyn_reconfig=false,enable_axi=0,feedback_source=FDBK_AUTO,PRIMITIVE=MMCM,num_out_clk=2,clkin1_period=5.0,clkin2_period=10.0,use_power_down=false,use_reset=true,use_locked=true,use_inclk_stopped=false,feedback_type=SINGLE,CLOCK_MGR_TYPE=NA,manual_override=false}";
 end adc_clock;
 
 architecture STRUCTURE of adc_clock is
@@ -212,6 +220,7 @@ U0: entity work.adc_clock_adc_clock_clk_wiz
       clk_in1_n => clk_in1_n,
       clk_in1_p => clk_in1_p,
       clk_out1 => clk_out1,
+      clk_out2 => clk_out2,
       locked => locked,
       reset => reset
     );

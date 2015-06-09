@@ -56,6 +56,13 @@ entity rhea is
     cha_n          : in     std_logic_vector(6 downto 0);
     chb_p          : in     std_logic_vector(6 downto 0);
     chb_n          : in     std_logic_vector(6 downto 0);
+    -- DAC I/O
+    dclk_p         : out    std_logic;
+    dclk_n         : out    std_logic;
+    frame_p        : out    std_logic;
+    frame_n        : out    std_logic;
+    dout_p         : out    std_logic_vector(7 downto 0);
+    dout_n         : out    std_logic_vector(7 downto 0);
     -- ADC/DAC Register Control I/O
     spi_sclk25     : buffer std_logic;
     spi_sdata25    : buffer std_logic;
@@ -122,30 +129,51 @@ architecture Behavioral of rhea is
     port (
       clk_in1_p : in  std_logic;        -- clk_ab_p
       clk_in1_n : in  std_logic;        -- clk_ab_n
-      clk_out1  : out std_logic;        -- clk_adc
+      clk_out1  : out std_logic;        -- clk_adc    (200 MHz)
+      clk_out2  : out std_logic;        -- clk_adc_2x (400 MHz)
       reset     : in  std_logic;        -- cpu_rst
       locked    : out std_logic);
   end component adc_clock;
 
-  signal clk_adc : std_logic;
-  signal adc_rst : std_logic;
-  signal adc_loc : std_logic;
+  signal clk_adc    : std_logic;
+  signal clk_adc_2x : std_logic;
+  signal adc_rst    : std_logic;
+  signal adc_loc    : std_logic;
 
   component adc is
     port (
-      clk        : in  std_logic;
-      rst        : in  std_logic;
+      clk    : in  std_logic;
+      rst    : in  std_logic;
       -- ADC I/O
-      cha_p      : in  std_logic_vector(6 downto 0);
-      cha_n      : in  std_logic_vector(6 downto 0);
-      chb_p      : in  std_logic_vector(6 downto 0);
-      chb_n      : in  std_logic_vector(6 downto 0);
-      adc_data_a : out std_logic_vector(13 downto 0);
-      adc_data_b : out std_logic_vector(13 downto 0));
+      cha_p  : in  std_logic_vector(6 downto 0);
+      cha_n  : in  std_logic_vector(6 downto 0);
+      chb_p  : in  std_logic_vector(6 downto 0);
+      chb_n  : in  std_logic_vector(6 downto 0);
+      dout_a : out std_logic_vector(13 downto 0);
+      dout_b : out std_logic_vector(13 downto 0));
   end component adc;
 
-  signal adc_data_a : std_logic_vector(13 downto 0);
-  signal adc_data_b : std_logic_vector(13 downto 0);
+  signal adcd_a : std_logic_vector(13 downto 0);
+  signal adcd_b : std_logic_vector(13 downto 0);
+
+  component dac is
+    port (
+      clk     : in  std_logic;
+      clk_2x  : in  std_logic;
+      rst     : in  std_logic;
+      -- DAC I/O
+      din_a   : in  std_logic_vector(15 downto 0);
+      din_b   : in  std_logic_vector(15 downto 0);
+      dclk_p  : out std_logic;
+      dclk_n  : out std_logic;
+      frame_p : out std_logic;
+      frame_n : out std_logic;
+      dout_p  : out std_logic_vector(7 downto 0);
+      dout_n  : out std_logic_vector(7 downto 0));
+  end component dac;
+
+  signal dac_din_a : std_logic_vector(15 downto 0);
+  signal dac_din_b : std_logic_vector(15 downto 0);
 
   component adc_snapshot is
     port (
@@ -153,8 +181,8 @@ architecture Behavioral of rhea is
       rst           : in     std_logic;
       en            : in     std_logic;
       fmt_busy      : in     std_logic;
-      adc_data_a    : in     std_logic_vector(13 downto 0);
-      adc_data_b    : in     std_logic_vector(13 downto 0);
+      adc_din_a     : in     std_logic_vector(13 downto 0);
+      adc_din_b     : in     std_logic_vector(13 downto 0);
       wr_data_count : in     std_logic_vector(16 downto 0);
       dout          : out    byte_array(3 downto 0);
       rd_en         : buffer std_logic;
@@ -293,7 +321,7 @@ architecture Behavioral of rhea is
       ack       : in  std_logic;
       rxd       : in  std_logic_vector(d_width-1 downto 0);
       spi_txd   : out std_logic_vector(d_width-1 downto 0);
-      sft_rst   : out std_logic);
+      dds_pinc  : out std_logic_vector(31 downto 0));
   end component rbcp;
 
   signal sft_rst      : std_logic;
@@ -338,25 +366,28 @@ architecture Behavioral of rhea is
 
   component dds is
     port (
-      clk   : in  std_logic;
-      rst   : in  std_logic;
-      en    : in  std_logic;
-      pinc  : in  std_logic_vector(31 downto 0);
-      valid : out std_logic;
-      cos   : out std_logic_vector(15 downto 0);
-      sin   : out std_logic_vector(15 downto 0);
-      busy  : out std_logic;
-      ack   : out std_logic);
+      clk      : in     std_logic;
+      rst      : in     std_logic;
+      en       : in     std_logic;
+      pinc     : in     std_logic_vector(31 downto 0);
+      valid    : out    std_logic;
+      cos      : out    std_logic_vector(15 downto 0);
+      sin      : out    std_logic_vector(15 downto 0);
+      busy     : out    std_logic;
+      ack      : out    std_logic;
+      set_pinc : buffer std_logic_vector(31 downto 0));
   end component dds;
 
-  signal dds_en    : std_logic;
-  signal dds_rst   : std_logic;
-  signal pinc      : std_logic_vector(31 downto 0);
-  signal dds_valid : std_logic;
-  signal cos       : std_logic_vector(15 downto 0);
-  signal sin       : std_logic_vector(15 downto 0);
-  signal dds_busy  : std_logic;
-  signal dds_ack   : std_logic;
+  signal dds_en         : std_logic;
+  signal dds_rst        : std_logic;
+  signal dds_pinc       : std_logic_vector(31 downto 0);
+  signal dds_pinc_debug : std_logic_vector(7 downto 0);
+  signal dds_valid      : std_logic;
+  signal cos            : std_logic_vector(15 downto 0);
+  signal sin            : std_logic_vector(15 downto 0);
+  signal dds_busy       : std_logic;
+  signal dds_ack        : std_logic;
+  signal dds_set_pinc   : std_logic_vector(31 downto 0);
 
   ---------------------------------------------------------------------------
   -- Debug
@@ -383,6 +414,7 @@ begin
       clk_in1_p => clk_ab_p,
       clk_in1_n => clk_ab_n,
       clk_out1  => clk_adc,
+      clk_out2  => clk_adc_2x,
       reset     => cpu_rst,
       locked    => adc_loc);
 
@@ -412,14 +444,14 @@ begin
   ---------------------------------------------------------------------------
   ADC_inst : adc
     port map (
-      clk        => clk_adc,
-      rst        => adc_rst,
-      cha_p      => cha_p,
-      cha_n      => cha_n,
-      chb_p      => chb_p,
-      chb_n      => chb_n,
-      adc_data_a => adc_data_a,
-      adc_data_b => adc_data_b);  
+      clk    => clk_adc,
+      rst    => adc_rst,
+      cha_p  => cha_p,
+      cha_n  => cha_n,
+      chb_p  => chb_p,
+      chb_n  => chb_n,
+      dout_a => adcd_a,
+      dout_b => adcd_b);  
 
   RSFF_ADC_Register_Reset : rs_ff
     port map (
@@ -429,16 +461,33 @@ begin
       qb => adc_reset25);
 
   ---------------------------------------------------------------------------
+  -- DAC
+  ---------------------------------------------------------------------------
+  DAC_inst : dac
+    port map (
+      clk     => clk_adc,
+      clk_2x  => clk_adc_2x,
+      rst     => adc_rst,
+      din_a   => cos,
+      din_b   => sin,
+      dclk_p  => dclk_p,
+      dclk_n  => dclk_n,
+      frame_p => frame_p,
+      frame_n => frame_n,
+      dout_p  => dout_p,
+      dout_n  => dout_n);
+
+  ---------------------------------------------------------------------------
   -- ADC Snapshot
   ---------------------------------------------------------------------------
-  ADC_Snapshot_int : adc_snapshot
+  ADC_Snapshot_inst : adc_snapshot
     port map (
       clk           => clk_adc,
       rst           => adc_rst,
       en            => adc_ss_trg,
       fmt_busy      => fmt_busy,
-      adc_data_a    => adc_data_a,
-      adc_data_b    => adc_data_b,
+      adc_din_a     => adcd_a,
+      adc_din_b     => adcd_b,
       wr_data_count => wr_data_count,
       dout          => adc_ss_data,
       rd_en         => fmt_en,
@@ -468,7 +517,7 @@ begin
   ---------------------------------------------------------------------------
   Data_Transfer_to_SiTCP_inst : data_transfer_to_sitcp
     port map (
-      rst              => sft_rst,
+      rst              => sys_rst or sft_rst,
       wr_clk           => clk_adc,
       rd_clk           => clk_200,
       fifo_wr_en       => fifo_wr_en,
@@ -529,7 +578,7 @@ begin
       d_width => 16)
     port map (
       clk       => clk_200,
-      rst       => sitcp_rst,
+      rst       => sitcp_rst or sys_rst,
       rbcp_act  => rbcp_act,
       rbcp_addr => rbcp_addr,
       rbcp_we   => rbcp_we,
@@ -541,7 +590,7 @@ begin
       ack       => rbcp_mdl_ack,
       rxd       => rbcp_mdl_rxd,
       spi_txd   => spi_txd,
-      sft_rst   => open);
+      dds_pinc  => dds_pinc);
 
   rbcp_id <= rbcp_addr(31 downto 28);   -- Control module ID
                                         --
@@ -549,14 +598,14 @@ begin
                                         -- x"1": ADC Register
                                         -- x"2": DAC Register
                                         -- x"3": ADC Snapshot
-                                        -- x"4": Set Frequency
+                                        -- x"4": Set Frequency for DDS
                                         --
 
   spi_req    <= rbcp_mdl_req when rbcp_id = x"1" or rbcp_id = x"2" else '0';
   adc_ss_trg <= rbcp_mdl_req when rbcp_id = x"3"                   else '0';
   dds_en     <= rbcp_mdl_req when rbcp_id = x"4"                   else '0';
 
-  sft_rst      <= adc_ss_trg;
+  sft_rst      <= adc_ss_trg or dds_en;
   rbcp_mdl_ack <= spi_ack or adc_ss_ack or dds_ack;
   rbcp_mdl_rxd <= spi_rxd;
 
@@ -606,15 +655,16 @@ begin
   ---------------------------------------------------------------------------
   DDS_inst : dds
     port map (
-      clk   => clk_200,
-      rst   => sys_rst,
-      en    => dds_en,
-      pinc  => pinc,
-      valid => dds_valid,
-      cos   => cos,
-      sin   => sin,
-      busy  => dds_busy,
-      ack   => dds_ack);
+      clk      => clk_200,
+      rst      => sys_rst,
+      en       => dds_en,
+      pinc     => dds_pinc,
+      valid    => dds_valid,
+      cos      => cos,
+      sin      => sin,
+      busy     => dds_busy,
+      ack      => dds_ack,
+      set_pinc => dds_set_pinc);
 
   ---------------------------------------------------------------------------
   -- GPIO LED
@@ -630,8 +680,13 @@ begin
   ---------------------------------------------------------------------------
   -- Debug
   ---------------------------------------------------------------------------
-  gpio_led <= adc_data_a(13 downto 6) when gpio_dip_sw(3) = '0' else
-              adc_data_b(13 downto 6);  -- ADC
+--  gpio_led <= adc_data_a(13 downto 6) when gpio_dip_sw(3) = '0' else
+--              adc_data_b(13 downto 6);  -- ADC
+  gpio_led <= dds_set_pinc(31 downto 24) when gpio_dip_sw(3 downto 1) = "000" else
+              dds_set_pinc(23 downto 16) when gpio_dip_sw(3 downto 1) = "001" else
+              dds_set_pinc(15 downto 8)  when gpio_dip_sw(3 downto 1) = "010" else
+              dds_set_pinc(7 downto 0)   when gpio_dip_sw(3 downto 1) = "011" else
+              x"00";
 
   process(clk_adc)
   begin

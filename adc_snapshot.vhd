@@ -42,8 +42,8 @@ entity adc_snapshot is
     rst           : in     std_logic;
     en            : in     std_logic;
     fmt_busy      : in     std_logic;
-    adc_data_a    : in     std_logic_vector(13 downto 0);
-    adc_data_b    : in     std_logic_vector(13 downto 0);
+    adc_din_a     : in     std_logic_vector(13 downto 0);
+    adc_din_b     : in     std_logic_vector(13 downto 0);
     wr_data_count : in     std_logic_vector(16 downto 0);
     dout          : out    byte_array(3 downto 0);
     rd_en         : buffer std_logic;
@@ -86,8 +86,8 @@ begin
   Timing_buffer_proc : process(clk)
   begin
     if rising_edge(clk) then
-      adcda_fmt <= "00" & adc_data_a;
-      adcdb_fmt <= "00" & adc_data_b;
+      adcda_fmt <= "00" & adc_din_a;
+      adcdb_fmt <= "00" & adc_din_b;
       din       <= adcda_fmt & adcdb_fmt;
     end if;
   end process;
