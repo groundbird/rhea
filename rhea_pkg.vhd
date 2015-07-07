@@ -33,25 +33,21 @@ use IEEE.STD_LOGIC_1164.all;
 
 package rhea_pkg is
 
-  -- timestamp size
---  constant ts_size : integer := 5;      -- bytes
+  ---------------------------------------------------------------------------
+  -- Global Constants
+  ---------------------------------------------------------------------------
+  constant N_CHANNEL       : integer := 1;
+  constant DOWNSAMPLE_RATE : integer := 200000;
+  constant IQ_DATA_WIDTH   : integer := 56;  -- until 30M down-sample possible  
+  constant LATENCY_ACC     : integer := 5;   -- accumlator latency
 
-  -- "d_size" is the main data of formated data (i.e., compose of header,
-  -- timestamp, main data and footer).
-  constant d_size : integer := 4;
---  constant adc_ss_d_size : integer := 4;  -- bytes
-  -- header (1) + timestamp (5) + data + footer (1); (bytes)
---  constant fmt_data_size : integer := d_size+7;
---  constant fmt_data_size : integer := 1024*100;  -- bytes
---  type fmt_data is array(natural range <>) of std_logic_vector(7 downto 0);
-
-  -- ADC Snapshot
---  constant adc_ss_d_cnt : integer := 100;  -- snapshot size [KB]
-
-  -- raw data size of formated data
---  constant raw_data_size : integer := fmt_data_size-ts_size-2;  -- 1017 bytes
-
+  ---------------------------------------------------------------------------
+  -- User-difined Data Type
+  ---------------------------------------------------------------------------
   subtype byte is std_logic_vector(7 downto 0);
-  type byte_array is array(natural range <>) of byte;
+  type byte_array is array (natural range <>) of byte;
+
+  subtype iq_bus is std_logic_vector(IQ_DATA_WIDTH-1 downto 0);
+  type iq_array is array (N_CHANNEL-1 downto 0) of iq_bus;
   
 end rhea_pkg;

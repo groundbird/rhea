@@ -1,7 +1,7 @@
 // Copyright 1986-2014 Xilinx, Inc. All Rights Reserved.
 // --------------------------------------------------------------------------------
 // Tool Version: Vivado v.2014.2 (win64) Build 932637 Wed Jun 11 13:33:10 MDT 2014
-// Date        : Tue Jun 02 09:33:32 2015
+// Date        : Thu Jun 18 10:05:08 2015
 // Host        : rhea running 64-bit Service Pack 1  (build 7601)
 // Command     : write_verilog -force -mode synth_stub
 //               c:/Users/hikaru/readout/rhea/project_3/project_3.srcs/sources_1/ip/system_clock/system_clock_stub.v

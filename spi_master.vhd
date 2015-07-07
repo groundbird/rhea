@@ -63,7 +63,7 @@ architecture Behavioral of spi_master is
   signal slave       : integer;
   signal clk_ratio   : integer;
   signal cnt         : integer;
-  signal clk_tgl     : integer range 0 to d_width*2 + 1;
+  signal clk_tgl     : integer range 0 to d_width*2+1;
   signal assert_data : std_logic;
   signal cont_flg    : std_logic;
   signal rx_buf      : std_logic_vector(d_width-1 downto 0);
@@ -166,7 +166,7 @@ begin
             s_spi <= exec;
           end if;
           
-        when others => null;
+        when others => s_spi <= rdy;
       end case;
     end if;
   end process;

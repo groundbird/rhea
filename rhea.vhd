@@ -23,6 +23,7 @@ library IEEE;
 use IEEE.STD_LOGIC_1164.all;
 use IEEE.STD_LOGIC_ARITH.all;
 use IEEE.STD_LOGIC_SIGNED.all;
+use IEEE.STD_LOGIC_MISC.all;
 
 -- Uncomment the following library declaration if using
 -- arithmetic functions with Signed or Unsigned values
@@ -49,6 +50,9 @@ entity rhea is
     gpio_sw_s      : in     std_logic;
     gpio_sw_w      : in     std_logic;
     gpio_sw_c      : in     std_logic;
+    -- Clock from RHEA
+--    clk2fpga_p     : in     std_logic;  -- system clock
+--    clk2fpga_n     : in     std_logic;
     -- ADC I/O
     clk_ab_p       : in     std_logic;  -- ADC sample clock
     clk_ab_n       : in     std_logic;
@@ -63,6 +67,7 @@ entity rhea is
     frame_n        : out    std_logic;
     dout_p         : out    std_logic_vector(7 downto 0);
     dout_n         : out    std_logic_vector(7 downto 0);
+    txenable25     : out    std_logic;
     -- ADC/DAC Register Control I/O
     spi_sclk25     : buffer std_logic;
     spi_sdata25    : buffer std_logic;
@@ -71,7 +76,6 @@ entity rhea is
     adc_sdo25      : in     std_logic;
     dac_sdo25      : in     std_logic;
     adc_reset25    : out    std_logic;
-    txenable25     : out    std_logic;
     -- PHY I/O
     phy_mdio       : inout  std_logic;
     phy_mdc        : out    std_logic;
@@ -100,6 +104,7 @@ architecture Behavioral of rhea is
   end component rs_ff;
 
   signal cpu_rst : std_logic;
+  signal cmd_rst : std_logic;
 
   component falling_edge_detector is
     port (
@@ -112,8 +117,8 @@ architecture Behavioral of rhea is
 
   component system_clock is
     port (
-      clk_in1_p : in  std_logic;        -- sysclk_p
-      clk_in1_n : in  std_logic;        -- sysclk_n
+      clk_in1_p : in  std_logic;        -- system clock
+      clk_in1_n : in  std_logic;
       clk_out1  : out std_logic;        -- 200 MHz
       clk_out2  : out std_logic;        -- 125 MHz for SiTCP
       reset     : in  std_logic;        -- cpu_rst
@@ -127,7 +132,7 @@ architecture Behavioral of rhea is
 
   component adc_clock is
     port (
-      clk_in1_p : in  std_logic;        -- clk_ab_p
+      clk_in1_p : in  std_logic;        -- clk_ab_p   (200 MHz)
       clk_in1_n : in  std_logic;        -- clk_ab_n
       clk_out1  : out std_logic;        -- clk_adc    (200 MHz)
       clk_out2  : out std_logic;        -- clk_adc_2x (400 MHz)
@@ -158,18 +163,19 @@ architecture Behavioral of rhea is
 
   component dac is
     port (
-      clk     : in  std_logic;
-      clk_2x  : in  std_logic;
-      rst     : in  std_logic;
+      clk      : in  std_logic;
+      clk_2x   : in  std_logic;
+      rst      : in  std_logic;
       -- DAC I/O
-      din_a   : in  std_logic_vector(15 downto 0);
-      din_b   : in  std_logic_vector(15 downto 0);
-      dclk_p  : out std_logic;
-      dclk_n  : out std_logic;
-      frame_p : out std_logic;
-      frame_n : out std_logic;
-      dout_p  : out std_logic_vector(7 downto 0);
-      dout_n  : out std_logic_vector(7 downto 0));
+      din_a    : in  std_logic_vector(15 downto 0);
+      din_b    : in  std_logic_vector(15 downto 0);
+      dclk_p   : out std_logic;
+      dclk_n   : out std_logic;
+      frame_p  : out std_logic;
+      frame_n  : out std_logic;
+      dout_p   : out std_logic_vector(7 downto 0);
+      dout_n   : out std_logic_vector(7 downto 0);
+      txenable : out std_logic);
   end component dac;
 
   signal dac_din_a : std_logic_vector(15 downto 0);
@@ -181,38 +187,65 @@ architecture Behavioral of rhea is
       rst           : in     std_logic;
       en            : in     std_logic;
       fmt_busy      : in     std_logic;
-      adc_din_a     : in     std_logic_vector(13 downto 0);
-      adc_din_b     : in     std_logic_vector(13 downto 0);
+      din_a         : in     std_logic_vector(13 downto 0);
+      din_b         : in     std_logic_vector(13 downto 0);
       wr_data_count : in     std_logic_vector(16 downto 0);
       dout          : out    byte_array(3 downto 0);
-      rd_en         : buffer std_logic;
+      valid         : buffer std_logic;
       ack           : out    std_logic);
   end component adc_snapshot;
 
-  signal adc_ss_trg  : std_logic;
-  signal adc_ss_ack  : std_logic;
-  signal adc_ss_data : byte_array(3 downto 0);
+  signal adc_ss_trg   : std_logic;
+  signal adc_ss_ack   : std_logic;
+  signal adc_ss_data  : byte_array(3 downto 0);
+  signal adc_ss_valid : std_logic;
+
+  component iq_reader is
+    port (
+      clk      : in  std_logic;
+      rst      : in  std_logic;
+      req      : in  std_logic;
+      fmt_busy : in  std_logic;
+      valid    : out std_logic;
+      busy     : out std_logic;
+      ack      : out std_logic);
+  end component iq_reader;
+
+  signal iq_req  : std_logic;
+  signal iq_en   : std_logic;
+  signal iq_busy : std_logic;
+  signal iq_ack  : std_logic;
 
   component formatter is
     generic (
       d_size : integer);                -- bytes
     port (
-      clk        : in     std_logic;
-      rst        : in     std_logic;
-      ts_rst     : in     std_logic;
-      en         : in     std_logic;
-      din        : in     byte_array(d_size-1 downto 0);
-      fifo_wr_en : out    std_logic;
-      busy       : out    std_logic;
-      ack        : buffer std_logic;
-      dout       : out    std_logic_vector(7 downto 0));
+      clk    : in     std_logic;
+      rst    : in     std_logic;
+      ts_rst : in     std_logic;
+      en     : in     std_logic;
+      din    : in     byte_array(d_size-1 downto 0);
+      valid  : out    std_logic;
+      busy   : out    std_logic;
+      ack    : buffer std_logic;
+      dout   : out    std_logic_vector(7 downto 0));
   end component formatter;
 
-  signal fmt_en   : std_logic;
-  signal fmt_din  : byte_array(d_size-1 downto 0);
-  signal fmt_busy : std_logic;
-  signal fmt_ack  : std_logic;
-  signal fmt_dout : std_logic_vector(7 downto 0);
+  -- Common
+  signal fmt_busy         : std_logic;
+  signal chunk_data       : std_logic_vector(7 downto 0);
+  -- ADC Snapshot
+  signal adc_ss_fmt_valid : std_logic;
+  signal adc_ss_fmt_busy  : std_logic;
+  signal adc_ss_fmt_ack   : std_logic;
+  signal adc_ss_fmt_chunk : std_logic_vector(7 downto 0);
+  -- I/Q Data Downsample
+  signal iq_fmt_valid     : std_logic;
+  signal iq_fmt_busy      : std_logic;
+  signal iq_fmt_ack       : std_logic;
+  signal iq_fmt_chunk     : std_logic_vector(7 downto 0);
+
+  signal fmt_iq_data : byte_array(N_CHANNEL*IQ_DATA_WIDTH/4-1 downto 0);
 
   component data_transfer_to_sitcp is
     port (
@@ -366,20 +399,18 @@ architecture Behavioral of rhea is
 
   component dds is
     port (
-      clk      : in     std_logic;
-      rst      : in     std_logic;
-      en       : in     std_logic;
-      pinc     : in     std_logic_vector(31 downto 0);
-      valid    : out    std_logic;
-      cos      : out    std_logic_vector(15 downto 0);
-      sin      : out    std_logic_vector(15 downto 0);
-      busy     : out    std_logic;
-      ack      : out    std_logic;
-      set_pinc : buffer std_logic_vector(31 downto 0));
+      clk   : in  std_logic;
+      rst   : in  std_logic;
+      en    : in  std_logic;
+      pinc  : in  std_logic_vector(31 downto 0);
+      valid : out std_logic;
+      cos   : out std_logic_vector(15 downto 0);
+      sin   : out std_logic_vector(15 downto 0);
+      busy  : out std_logic;
+      ack   : out std_logic);
   end component dds;
 
   signal dds_en         : std_logic;
-  signal dds_rst        : std_logic;
   signal dds_pinc       : std_logic_vector(31 downto 0);
   signal dds_pinc_debug : std_logic_vector(7 downto 0);
   signal dds_valid      : std_logic;
@@ -387,13 +418,45 @@ architecture Behavioral of rhea is
   signal sin            : std_logic_vector(15 downto 0);
   signal dds_busy       : std_logic;
   signal dds_ack        : std_logic;
-  signal dds_set_pinc   : std_logic_vector(31 downto 0);
+
+  component ddc is
+    port (
+      clk    : in  std_logic;
+      rst    : in  std_logic;
+      adcd_a : in  std_logic_vector(13 downto 0);
+      adcd_b : in  std_logic_vector(13 downto 0);
+      cos    : in  std_logic_vector(15 downto 0);
+      sin    : in  std_logic_vector(15 downto 0);
+      iout   : out std_logic_vector(30 downto 0);
+      qout   : out std_logic_vector(30 downto 0));
+  end component ddc;
+
+  signal i_data : std_logic_vector(30 downto 0);
+  signal q_data : std_logic_vector(30 downto 0);
+
+  component downsampler is
+    port (
+      clk   : in  std_logic;
+      rst   : in  std_logic;
+      din   : in  std_logic_vector(30 downto 0);
+      dout  : out std_logic_vector(IQ_DATA_WIDTH-1 downto 0);
+      valid : out std_logic);
+  end component downsampler;
+
+  signal ds_en     : std_logic;
+  signal ds_valid  : std_logic;
+  signal dsi_valid : std_logic_vector(N_CHANNEL-1 downto 0);
+  signal dsq_valid : std_logic_vector(N_CHANNEL-1 downto 0);
+  signal i_data_ds : iq_array;
+  signal q_data_ds : iq_array;
 
   ---------------------------------------------------------------------------
   -- Debug
   ---------------------------------------------------------------------------
-  signal debug : std_logic_vector(7 downto 0);
-  signal cnt   : std_logic_vector(24 downto 0);
+--  signal debug     : std_logic_vector(7 downto 0);
+--  signal cnt       : std_logic_vector(24 downto 0);
+  signal cos_debug : std_logic_vector(IQ_DATA_WIDTH-1 downto 0);
+  signal sin_debug : std_logic_vector(IQ_DATA_WIDTH-1 downto 0);
   
 begin
 
@@ -404,9 +467,11 @@ begin
     port map (
       clk_in1_p => sysclk_p,
       clk_in1_n => sysclk_n,
+--      clk_in1_p => clk2fpga_p,
+--      clk_in1_n => clk2fpga_n,
       clk_out1  => clk_200,
       clk_out2  => clk_125,
-      reset     => cpu_rst,
+      reset     => cpu_rst or cmd_rst,
       locked    => clk_loc);
 
   ADC_Clock_inst : adc_clock
@@ -415,7 +480,8 @@ begin
       clk_in1_n => clk_ab_n,
       clk_out1  => clk_adc,
       clk_out2  => clk_adc_2x,
-      reset     => cpu_rst,
+--      clk_out3  => dclk,
+      reset     => cpu_rst or cmd_rst,
       locked    => adc_loc);
 
   RSFF_CPU_Reset : rs_ff
@@ -465,55 +531,115 @@ begin
   ---------------------------------------------------------------------------
   DAC_inst : dac
     port map (
-      clk     => clk_adc,
-      clk_2x  => clk_adc_2x,
-      rst     => adc_rst,
-      din_a   => cos,
-      din_b   => sin,
-      dclk_p  => dclk_p,
-      dclk_n  => dclk_n,
-      frame_p => frame_p,
-      frame_n => frame_n,
-      dout_p  => dout_p,
-      dout_n  => dout_n);
+      clk      => clk_adc,
+      clk_2x   => clk_adc_2x,
+      rst      => adc_rst,
+      din_a    => cos,
+      din_b    => sin,
+      dclk_p   => dclk_p,
+      dclk_n   => dclk_n,
+      frame_p  => frame_p,
+      frame_n  => frame_n,
+      dout_p   => dout_p,
+      dout_n   => dout_n,
+      txenable => txenable25);
 
   ---------------------------------------------------------------------------
   -- ADC Snapshot
   ---------------------------------------------------------------------------
   ADC_Snapshot_inst : adc_snapshot
     port map (
+      -- in
       clk           => clk_adc,
       rst           => adc_rst,
       en            => adc_ss_trg,
       fmt_busy      => fmt_busy,
-      adc_din_a     => adcd_a,
-      adc_din_b     => adcd_b,
+      din_a         => adcd_a,
+      din_b         => adcd_b,
       wr_data_count => wr_data_count,
+      -- out
       dout          => adc_ss_data,
-      rd_en         => fmt_en,
+      valid         => adc_ss_valid,
       ack           => adc_ss_ack);
+
+  --------------------------------------------------------------------------
+  -- IQ Reader
+  --------------------------------------------------------------------------
+  IQ_Reader_inst : iq_reader
+    port map (
+      clk      => clk_adc,
+      rst      => adc_rst,
+      req      => iq_req,
+      fmt_busy => fmt_busy,
+      valid    => iq_en,
+      busy     => iq_busy,
+      ack      => iq_ack);
 
   ---------------------------------------------------------------------------
   -- Data Format for SiTCP
   ---------------------------------------------------------------------------
-  Formatter_inst : formatter
-    generic map (
-      d_size => d_size)
-    port map (
-      clk        => clk_adc,
-      rst        => sys_rst,
-      ts_rst     => adc_ss_trg,
-      en         => fmt_en,
-      din        => fmt_din,
-      fifo_wr_en => fifo_wr_en,
-      busy       => fmt_busy,
-      ack        => fmt_ack,
-      dout       => fifo_din);
+  fmt_busy <= adc_ss_fmt_busy or iq_fmt_busy;
 
-  fmt_din <= adc_ss_data;
+  ADC_Snapshot_Formatter_inst : formatter
+    generic map (
+      d_size => 4)
+    port map (
+      -- in
+      clk    => clk_adc,
+      rst    => adc_rst,
+      ts_rst => sft_rst,
+      en     => adc_ss_valid,
+      din    => adc_ss_data,
+      -- out
+      valid  => adc_ss_fmt_valid,
+      busy   => adc_ss_fmt_busy,
+      ack    => adc_ss_fmt_ack,
+      dout   => adc_ss_fmt_chunk);
+
+  IQ_Data_Formatter_inst : formatter
+    generic map (
+      d_size => N_CHANNEL*IQ_DATA_WIDTH/4)  -- bytes
+    port map (
+      -- in
+      clk    => clk_adc,
+      rst    => adc_rst,
+      ts_rst => sft_rst,
+      en     => ds_valid and iq_en,
+      din    => fmt_iq_data,
+      -- out
+      valid  => iq_fmt_valid,
+      busy   => iq_fmt_busy,
+      ack    => iq_fmt_ack,
+      dout   => iq_fmt_chunk);
+
+  ds_valid <= and_reduce(dsi_valid & dsq_valid);
+
+--  Convert_iqarray_to_byte_array : for i in 0 to N_CHANNEL-1 generate
+--    Serialize_IQ_Data : for j in 0 to IQ_DATA_WIDTH/8-1 generate
+--      fmt_iq_data(IQ_DATA_WIDTH/4*i + j)                 <= i_data_ds(i)(8*j+7 downto 8*j);
+--      fmt_iq_data(IQ_DATA_WIDTH/4*i + j+IQ_DATA_WIDTH/8) <= q_data_ds(i)(8*j+7 downto 8*j);
+--    end generate Serialize_IQ_Data;
+--  end generate Convert_iqarray_to_byte_array;
+
+  Convert_iqarray_to_byte_array : for i in 0 to N_CHANNEL-1 generate
+    Serialize_IQ_Data : for j in 0 to IQ_DATA_WIDTH/8-1 generate
+      fmt_iq_data(IQ_DATA_WIDTH/4*(i+1)-j-8) <= i_data_ds(i)(8*j+7 downto 8*j);
+      fmt_iq_data(IQ_DATA_WIDTH/4*(i+1)-j-1) <= q_data_ds(i)(8*j+7 downto 8*j);
+    end generate Serialize_IQ_Data;
+  end generate Convert_iqarray_to_byte_array;
+
+--  constant iq_dsize : integer := 7;
+
+--  Serialize_IQ_Data : for j in 0 to 6 generate
+--    fmt_iq_data(13 - j) <= cos_debug(8*j+7 downto 8*j);
+--    fmt_iq_data(6 - j)  <= sin_debug(8*j+7 downto 8*j);
+--  end generate Serialize_IQ_Data;
+
+--  cos_debug <= conv_std_logic_vector(signed(cos), 56);
+--  sin_debug <= conv_std_logic_vector(signed(sin), 56);
 
   ---------------------------------------------------------------------------
-  -- Data transfer to SiTCP
+  -- Data Transfer to SiTCP
   ---------------------------------------------------------------------------
   Data_Transfer_to_SiTCP_inst : data_transfer_to_sitcp
     port map (
@@ -524,10 +650,14 @@ begin
       fifo_almost_full => fifo_almost_full,
       tcp_open_ack     => tcp_open_ack,
       tcp_tx_full      => tcp_tx_full,
-      din              => fifo_din,
+      din              => chunk_data,
       tcp_txd          => tcp_txd,
       tcp_tx_wr        => tcp_tx_wr,
       wr_data_count    => wr_data_count);
+
+  fifo_wr_en <= adc_ss_fmt_valid xor iq_fmt_valid;
+  chunk_data <= adc_ss_fmt_chunk when adc_ss_fmt_valid = '1' else
+                iq_fmt_chunk when iq_fmt_valid = '1' else (others => '0');
 
   ---------------------------------------------------------------------------
   -- SiTCP
@@ -599,15 +729,33 @@ begin
                                         -- x"2": DAC Register
                                         -- x"3": ADC Snapshot
                                         -- x"4": Set Frequency for DDS
+                                        -- x"5": I/Q Data Readout
+                                        --
+                                        -- x"F": Reset
                                         --
 
   spi_req    <= rbcp_mdl_req when rbcp_id = x"1" or rbcp_id = x"2" else '0';
   adc_ss_trg <= rbcp_mdl_req when rbcp_id = x"3"                   else '0';
   dds_en     <= rbcp_mdl_req when rbcp_id = x"4"                   else '0';
+  iq_req     <= rbcp_mdl_req when rbcp_id = x"5"                   else '0';
+  cmd_rst    <= rbcp_mdl_req when rbcp_id = x"f"                   else '0';
 
-  sft_rst      <= adc_ss_trg or dds_en;
-  rbcp_mdl_ack <= spi_ack or adc_ss_ack or dds_ack;
+  sft_rst      <= adc_ss_trg or dds_en or iq_req;
+  rbcp_mdl_ack <= spi_ack or adc_ss_ack or dds_ack or iq_ack;
   rbcp_mdl_rxd <= spi_rxd;
+
+--  process(clk_200)
+--    variable cnt : integer range 0 to 1999999;  -- wait 10 ms
+--  begin
+--    if rising_edge(clk_200) then
+--      if cnt = 1999999 then
+--        cmd_ack <= cmd_rst;
+--        cnt := 0;
+--      else
+--        cnt := cnt + 1;
+--      end if;
+--    end if;
+--  end process;
 
   ---------------------------------------------------------------------------
   -- SPI Control
@@ -650,55 +798,75 @@ begin
       d   => spi_busy,
       q   => spi_ack);
 
-  ---------------------------------------------------------------------------
-  -- DDS
-  ---------------------------------------------------------------------------
-  DDS_inst : dds
-    port map (
-      clk      => clk_200,
-      rst      => sys_rst,
-      en       => dds_en,
-      pinc     => dds_pinc,
-      valid    => dds_valid,
-      cos      => cos,
-      sin      => sin,
-      busy     => dds_busy,
-      ack      => dds_ack,
-      set_pinc => dds_set_pinc);
+  Demodulation : for i in 0 to N_CHANNEL-1 generate
+    -------------------------------------------------------------------------
+    -- DDS
+    -------------------------------------------------------------------------
+    DDS_inst : dds
+      port map (
+        -- in
+        clk   => clk_adc,
+        rst   => adc_rst,
+        en    => dds_en,
+        pinc  => dds_pinc,
+        -- out
+        valid => dds_valid,
+        cos   => cos,
+        sin   => sin,
+        busy  => dds_busy,
+        ack   => dds_ack);
+
+    -------------------------------------------------------------------------
+    -- DDC
+    -------------------------------------------------------------------------
+    DDC_inst : ddc
+      port map (
+        -- in
+        clk    => clk_adc,
+        rst    => adc_rst,
+        adcd_a => adcd_a,
+        adcd_b => adcd_b,
+        cos    => cos,
+        sin    => sin,
+        -- out
+        iout   => i_data,
+        qout   => q_data);
+
+    -------------------------------------------------------------------------
+    -- Downsample
+    -------------------------------------------------------------------------
+    I_Data_Downsampler_inst : downsampler
+      port map (
+        clk   => clk_adc,
+        rst   => adc_rst,
+        din   => i_data,
+        dout  => i_data_ds(i),
+        valid => dsi_valid(i));
+
+    Q_Data_Downsampler_inst : downsampler
+      port map (
+        clk   => clk_adc,
+        rst   => adc_rst,
+        din   => q_data,
+        dout  => q_data_ds(i),
+        valid => dsq_valid(i));
+  end generate Demodulation;
 
   ---------------------------------------------------------------------------
   -- GPIO LED
   ---------------------------------------------------------------------------
---  gpio_led(0) <= gmii_1000m;
---  gpio_led(1) <= tcp_tx_full;
+  gpio_led(7) <= gmii_1000m;
+  gpio_led(6) <= tcp_tx_full;
+  gpio_led(5) <= adc_rst;
+  gpio_led(4) <= iq_busy;
+  gpio_led(3) <= '0';
+  gpio_led(2) <= '0';
+  gpio_led(1) <= '0';
+  gpio_led(0) <= '0';
 
   ---------------------------------------------------------------------------
   -- GPIO Dip Switch
   ---------------------------------------------------------------------------
   gmii_1000m <= gpio_dip_sw(0);         -- (0: 100MbE, 1: GbE)
-
-  ---------------------------------------------------------------------------
-  -- Debug
-  ---------------------------------------------------------------------------
---  gpio_led <= adc_data_a(13 downto 6) when gpio_dip_sw(3) = '0' else
---              adc_data_b(13 downto 6);  -- ADC
-  gpio_led <= dds_set_pinc(31 downto 24) when gpio_dip_sw(3 downto 1) = "000" else
-              dds_set_pinc(23 downto 16) when gpio_dip_sw(3 downto 1) = "001" else
-              dds_set_pinc(15 downto 8)  when gpio_dip_sw(3 downto 1) = "010" else
-              dds_set_pinc(7 downto 0)   when gpio_dip_sw(3 downto 1) = "011" else
-              x"00";
-
-  process(clk_adc)
-  begin
-    if (clk_adc'event and clk_adc = '1') then
-      if adc_rst = '1' then
-        cnt <= (others => '0');
-      else
-        cnt <= cnt + 1;
-      end if;
-    end if;
-  end process;
-
-  debug(7) <= cnt(24);
 
 end Behavioral;

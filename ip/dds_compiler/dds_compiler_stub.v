@@ -1,10 +1,10 @@
 // Copyright 1986-2014 Xilinx, Inc. All Rights Reserved.
 // --------------------------------------------------------------------------------
 // Tool Version: Vivado v.2014.2 (win64) Build 932637 Wed Jun 11 13:33:10 MDT 2014
-// Date        : Fri Jun 05 10:57:06 2015
+// Date        : Wed Jun 17 19:27:55 2015
 // Host        : rhea running 64-bit Service Pack 1  (build 7601)
 // Command     : write_verilog -force -mode synth_stub
-//               c:/Users/hikaru/readout/rhea/project_3/project_3.srcs/sources_1/ip/dds_compiler/dds_compiler_stub.v
+//               C:/Users/hikaru/readout/rhea/project_3/project_3.srcs/sources_1/ip/dds_compiler/dds_compiler_stub.v
 // Design      : dds_compiler
 // Purpose     : Stub declaration of top-level module interface
 // Device      : xc7k325tffg900-2

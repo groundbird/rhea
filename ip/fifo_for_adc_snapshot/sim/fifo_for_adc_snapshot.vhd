@@ -58,9 +58,8 @@ USE fifo_generator_v12_0.fifo_generator_v12_0;
 
 ENTITY fifo_for_adc_snapshot IS
   PORT (
+    clk : IN STD_LOGIC;
     rst : IN STD_LOGIC;
-    wr_clk : IN STD_LOGIC;
-    rd_clk : IN STD_LOGIC;
     din : IN STD_LOGIC_VECTOR(31 DOWNTO 0);
     wr_en : IN STD_LOGIC;
     rd_en : IN STD_LOGIC;
@@ -523,7 +522,7 @@ ARCHITECTURE fifo_for_adc_snapshot_arch OF fifo_for_adc_snapshot IS
 BEGIN
   U0 : fifo_generator_v12_0
     GENERIC MAP (
-      C_COMMON_CLOCK => 0,
+      C_COMMON_CLOCK => 1,
       C_COUNT_TYPE => 0,
       C_DATA_COUNT_WIDTH => 17,
       C_DEFAULT_VALUE => "BlankString",
@@ -549,7 +548,7 @@ BEGIN
       C_HAS_WR_ACK => 0,
       C_HAS_WR_DATA_COUNT => 0,
       C_HAS_WR_RST => 0,
-      C_IMPLEMENTATION_TYPE => 2,
+      C_IMPLEMENTATION_TYPE => 0,
       C_INIT_WR_PNTR_VAL => 0,
       C_MEMORY_TYPE => 1,
       C_MIF_FILE_NAME => "BlankString",
@@ -561,8 +560,8 @@ BEGIN
       C_PROG_EMPTY_THRESH_ASSERT_VAL => 2,
       C_PROG_EMPTY_THRESH_NEGATE_VAL => 3,
       C_PROG_EMPTY_TYPE => 0,
-      C_PROG_FULL_THRESH_ASSERT_VAL => 131069,
-      C_PROG_FULL_THRESH_NEGATE_VAL => 131068,
+      C_PROG_FULL_THRESH_ASSERT_VAL => 131070,
+      C_PROG_FULL_THRESH_NEGATE_VAL => 131069,
       C_PROG_FULL_TYPE => 0,
       C_RD_DATA_COUNT_WIDTH => 17,
       C_RD_DEPTH => 131072,
@@ -727,12 +726,12 @@ BEGIN
     PORT MAP (
       backup => '0',
       backup_marker => '0',
-      clk => '0',
+      clk => clk,
       rst => rst,
       srst => '0',
-      wr_clk => wr_clk,
+      wr_clk => '0',
       wr_rst => '0',
-      rd_clk => rd_clk,
+      rd_clk => '0',
       rd_rst => '0',
       din => din,
       wr_en => wr_en,

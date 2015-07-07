@@ -2,7 +2,7 @@
 -- Company: 
 -- Engineer: 
 -- 
--- Create Date: 2015-04-24 19:24:20
+-- Create Date: 2015/04/24 19:24:20
 -- Design Name: 
 -- Module Name: adc_snapshot - Behavioral
 -- Project Name: 
@@ -42,11 +42,11 @@ entity adc_snapshot is
     rst           : in     std_logic;
     en            : in     std_logic;
     fmt_busy      : in     std_logic;
-    adc_din_a     : in     std_logic_vector(13 downto 0);
-    adc_din_b     : in     std_logic_vector(13 downto 0);
+    din_a         : in     std_logic_vector(13 downto 0);
+    din_b         : in     std_logic_vector(13 downto 0);
     wr_data_count : in     std_logic_vector(16 downto 0);
     dout          : out    byte_array(3 downto 0);
-    rd_en         : buffer std_logic;
+    valid         : buffer std_logic;
     ack           : out    std_logic);
 end entity adc_snapshot;
 
@@ -55,15 +55,14 @@ architecture Behavioral of adc_snapshot is
   type fifo_state is (idle, init, exec, fini);
   signal s_fifo : fifo_state;
 
-  signal adcda_fmt : std_logic_vector(15 downto 0);
-  signal adcdb_fmt : std_logic_vector(15 downto 0);
+  signal din_a_buf : std_logic_vector(15 downto 0);
+  signal din_b_buf : std_logic_vector(15 downto 0);
   signal cnt       : std_logic_vector(16 downto 0);
 
   component fifo_for_adc_snapshot is
     port (
+      clk         : in  std_logic;
       rst         : in  std_logic;
-      wr_clk      : in  std_logic;
-      rd_clk      : in  std_logic;
       din         : in  std_logic_vector(31 downto 0);
       wr_en       : in  std_logic;
       rd_en       : in  std_logic;
@@ -83,14 +82,22 @@ architecture Behavioral of adc_snapshot is
 
 begin
 
-  Timing_buffer_proc : process(clk)
+  Timing_Buffer_proc : process(clk)
   begin
     if rising_edge(clk) then
-      adcda_fmt <= "00" & adc_din_a;
-      adcdb_fmt <= "00" & adc_din_b;
-      din       <= adcda_fmt & adcdb_fmt;
+      if rst = '1' then
+        din_a_buf <= (others => '0');
+        din_b_buf <= (others => '0');
+        din       <= (others => '0');
+      else
+        din_a_buf <= conv_std_logic_vector(signed(din_a), 16);
+        din_b_buf <= conv_std_logic_vector(signed(din_b), 16);
+        din       <= din_a_buf & din_b_buf;
+      end if;
     end if;
   end process;
+
+--  din <= din_a_buf & din_b_buf;
 
   Format_ADC_Data_gen : for i in 0 to 3 generate
     dout(3-i) <= dout_buf(8*i+7 downto 8*i);
@@ -98,12 +105,11 @@ begin
 
   FIFO_512KB_for_ADC_Snapshot : fifo_for_adc_snapshot
     port map (
+      clk         => clk,
       rst         => fifo_rst,
-      wr_clk      => clk,
-      rd_clk      => clk,
       din         => din,
       wr_en       => wr_en,
-      rd_en       => rd_en,
+      rd_en       => valid,
       dout        => dout_buf,
       full        => full,
       almost_full => almost_full,
@@ -111,13 +117,13 @@ begin
 
   wr_en <= '1' when s_fifo = exec else '0';
   ack   <= '1' when s_fifo = fini else '0';
-  rd_en <= not (fmt_busy or empty or wr_data_count(16));
+  valid <= not (fmt_busy or empty or wr_data_count(16));
 
   FIFO_512KB_SM : process(clk)
   begin
     if rising_edge(clk) then
       if rst = '1' then
-        fifo_rst <= '0';
+        fifo_rst <= '1';
         s_fifo   <= idle;
         cnt      <= (others => '0');
       else
@@ -132,7 +138,7 @@ begin
 
           when init =>
             fifo_rst <= '0';
-            if full = '0' then
+            if full = '0' and empty = '1' then
               s_fifo <= exec;
             else
               cnt    <= (others => '0');

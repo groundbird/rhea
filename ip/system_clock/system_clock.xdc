@@ -53,7 +53,7 @@
 #----------------------------------------------------------------
 # Differential clock only needs one constraint
 create_clock -period 5.0 [get_ports clk_in1_p]
-set_input_jitter [get_clocks -of_objects [get_ports clk_in1_p]] 0.05
+set_input_jitter [get_clocks -of_objects [get_ports clk_in1_p]] 0.050000000000000003
 
 
 

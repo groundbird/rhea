@@ -10,7 +10,7 @@
       <spirit:componentRef spirit:vendor="xilinx.com" spirit:library="ip" spirit:name="fifo_generator" spirit:version="12.0"/>
       <spirit:configurableElementValues>
         <spirit:configurableElementValue spirit:referenceId="PARAM_VALUE.Component_Name">fifo_for_adc_snapshot</spirit:configurableElementValue>
-        <spirit:configurableElementValue spirit:referenceId="PARAM_VALUE.Fifo_Implementation">Independent_Clocks_Block_RAM</spirit:configurableElementValue>
+        <spirit:configurableElementValue spirit:referenceId="PARAM_VALUE.Fifo_Implementation">Common_Clock_Block_RAM</spirit:configurableElementValue>
         <spirit:configurableElementValue spirit:referenceId="PARAM_VALUE.synchronization_stages">2</spirit:configurableElementValue>
         <spirit:configurableElementValue spirit:referenceId="PARAM_VALUE.synchronization_stages_axi">2</spirit:configurableElementValue>
         <spirit:configurableElementValue spirit:referenceId="PARAM_VALUE.INTERFACE_TYPE">Native</spirit:configurableElementValue>
@@ -53,8 +53,8 @@
         <spirit:configurableElementValue spirit:referenceId="PARAM_VALUE.Read_Clock_Frequency">1</spirit:configurableElementValue>
         <spirit:configurableElementValue spirit:referenceId="PARAM_VALUE.Write_Clock_Frequency">1</spirit:configurableElementValue>
         <spirit:configurableElementValue spirit:referenceId="PARAM_VALUE.Programmable_Full_Type">No_Programmable_Full_Threshold</spirit:configurableElementValue>
-        <spirit:configurableElementValue spirit:referenceId="PARAM_VALUE.Full_Threshold_Assert_Value">131069</spirit:configurableElementValue>
-        <spirit:configurableElementValue spirit:referenceId="PARAM_VALUE.Full_Threshold_Negate_Value">131068</spirit:configurableElementValue>
+        <spirit:configurableElementValue spirit:referenceId="PARAM_VALUE.Full_Threshold_Assert_Value">131070</spirit:configurableElementValue>
+        <spirit:configurableElementValue spirit:referenceId="PARAM_VALUE.Full_Threshold_Negate_Value">131069</spirit:configurableElementValue>
         <spirit:configurableElementValue spirit:referenceId="PARAM_VALUE.Programmable_Empty_Type">No_Programmable_Empty_Threshold</spirit:configurableElementValue>
         <spirit:configurableElementValue spirit:referenceId="PARAM_VALUE.Empty_Threshold_Assert_Value">2</spirit:configurableElementValue>
         <spirit:configurableElementValue spirit:referenceId="PARAM_VALUE.Empty_Threshold_Negate_Value">3</spirit:configurableElementValue>
@@ -169,7 +169,7 @@
         <spirit:configurableElementValue spirit:referenceId="PARAM_VALUE.Enable_Common_Overflow">false</spirit:configurableElementValue>
         <spirit:configurableElementValue spirit:referenceId="PARAM_VALUE.enable_read_pointer_increment_by2">false</spirit:configurableElementValue>
         <spirit:configurableElementValue spirit:referenceId="PARAM_VALUE.Use_Embedded_Registers_axis">false</spirit:configurableElementValue>
-        <spirit:configurableElementValue spirit:referenceId="MODELPARAM_VALUE.C_COMMON_CLOCK">0</spirit:configurableElementValue>
+        <spirit:configurableElementValue spirit:referenceId="MODELPARAM_VALUE.C_COMMON_CLOCK">1</spirit:configurableElementValue>
         <spirit:configurableElementValue spirit:referenceId="MODELPARAM_VALUE.C_COUNT_TYPE">0</spirit:configurableElementValue>
         <spirit:configurableElementValue spirit:referenceId="MODELPARAM_VALUE.C_DATA_COUNT_WIDTH">17</spirit:configurableElementValue>
         <spirit:configurableElementValue spirit:referenceId="MODELPARAM_VALUE.C_DEFAULT_VALUE">BlankString</spirit:configurableElementValue>
@@ -195,7 +195,7 @@
         <spirit:configurableElementValue spirit:referenceId="MODELPARAM_VALUE.C_HAS_WR_ACK">0</spirit:configurableElementValue>
         <spirit:configurableElementValue spirit:referenceId="MODELPARAM_VALUE.C_HAS_WR_DATA_COUNT">0</spirit:configurableElementValue>
         <spirit:configurableElementValue spirit:referenceId="MODELPARAM_VALUE.C_HAS_WR_RST">0</spirit:configurableElementValue>
-        <spirit:configurableElementValue spirit:referenceId="MODELPARAM_VALUE.C_IMPLEMENTATION_TYPE">2</spirit:configurableElementValue>
+        <spirit:configurableElementValue spirit:referenceId="MODELPARAM_VALUE.C_IMPLEMENTATION_TYPE">0</spirit:configurableElementValue>
         <spirit:configurableElementValue spirit:referenceId="MODELPARAM_VALUE.C_INIT_WR_PNTR_VAL">0</spirit:configurableElementValue>
         <spirit:configurableElementValue spirit:referenceId="MODELPARAM_VALUE.C_MEMORY_TYPE">1</spirit:configurableElementValue>
         <spirit:configurableElementValue spirit:referenceId="MODELPARAM_VALUE.C_MIF_FILE_NAME">BlankString</spirit:configurableElementValue>
@@ -207,8 +207,8 @@
         <spirit:configurableElementValue spirit:referenceId="MODELPARAM_VALUE.C_PROG_EMPTY_THRESH_ASSERT_VAL">2</spirit:configurableElementValue>
         <spirit:configurableElementValue spirit:referenceId="MODELPARAM_VALUE.C_PROG_EMPTY_THRESH_NEGATE_VAL">3</spirit:configurableElementValue>
         <spirit:configurableElementValue spirit:referenceId="MODELPARAM_VALUE.C_PROG_EMPTY_TYPE">0</spirit:configurableElementValue>
-        <spirit:configurableElementValue spirit:referenceId="MODELPARAM_VALUE.C_PROG_FULL_THRESH_ASSERT_VAL">131069</spirit:configurableElementValue>
-        <spirit:configurableElementValue spirit:referenceId="MODELPARAM_VALUE.C_PROG_FULL_THRESH_NEGATE_VAL">131068</spirit:configurableElementValue>
+        <spirit:configurableElementValue spirit:referenceId="MODELPARAM_VALUE.C_PROG_FULL_THRESH_ASSERT_VAL">131070</spirit:configurableElementValue>
+        <spirit:configurableElementValue spirit:referenceId="MODELPARAM_VALUE.C_PROG_FULL_THRESH_NEGATE_VAL">131069</spirit:configurableElementValue>
         <spirit:configurableElementValue spirit:referenceId="MODELPARAM_VALUE.C_PROG_FULL_TYPE">0</spirit:configurableElementValue>
         <spirit:configurableElementValue spirit:referenceId="MODELPARAM_VALUE.C_RD_DATA_COUNT_WIDTH">17</spirit:configurableElementValue>
         <spirit:configurableElementValue spirit:referenceId="MODELPARAM_VALUE.C_RD_DEPTH">131072</spirit:configurableElementValue>

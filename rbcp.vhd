@@ -115,24 +115,24 @@ begin
         dds_pinc <= (others => '0');
       else
         case rbcp_addr(31 downto 24) is
-          -- ADC/DAC register control
-          when x"10" =>                 -- ADC register write
+          when x"10" =>
+            -- ADC register write
             spi_txd <= rbcp_addr(7 downto 0) & rbcp_wd;
             
-          when x"11" =>                 -- ADC register read
+          when x"11" =>
+            -- ADC register read
             spi_txd <= rbcp_addr(7 downto 0) & x"00";
             
-          when x"20" =>                 -- DAC register write
+          when x"20" =>
+            -- DAC register write
             spi_txd <= '0' & "00" & rbcp_addr(4 downto 0) & rbcp_wd;
             
-          when x"21" =>                 -- DAC register read
+          when x"21" =>
+            -- DAC register read
             spi_txd <= '1' & "00" & rbcp_addr(4 downto 0) & x"00";
 
-            -- Snapshot of ADC data
---          when x"30" => sft_rst_buf <= '1';
---          when x"31" => sft_rst_buf <= '0';
-
-          when x"40" =>                 -- Set Frequency for DDS
+          when x"40" =>
+            -- Set Frequency for DDS
             case rbcp_addr(3 downto 0) is
               when x"0"   => dds_pinc(31 downto 24) <= rbcp_wd;
               when x"1"   => dds_pinc(23 downto 16) <= rbcp_wd;
@@ -140,10 +140,6 @@ begin
               when x"3"   => dds_pinc(7 downto 0)   <= rbcp_wd;
               when others => null;
             end case;
---            dds_pinc(31 downto 24) <= rbcp_wd;
---            dds_pinc(23 downto 16) <= rbcp_wd;
---            dds_pinc(15 downto 8)  <= rbcp_wd;
---            dds_pinc(7 downto 0)   <= rbcp_wd;
             
           when others => null;
         end case;

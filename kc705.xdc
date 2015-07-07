@@ -80,8 +80,8 @@ set_property IOSTANDARD LVCMOS25 [get_ports phy_txc_gtxclk]
 set_property IOSTANDARD LVCMOS25 [get_ports phy_txclk]
 set_property IOSTANDARD LVCMOS25 [get_ports phy_txctl_txen]
 
-set_property PACKAGE_PIN AD12 [get_ports sysclk_p]
 set_property IOSTANDARD LVCMOS25 [get_ports phy_txer]
+set_property PACKAGE_PIN AD12 [get_ports sysclk_p]
 set_property IOSTANDARD LVDS [get_ports sysclk_p]
 set_property IOSTANDARD LVDS [get_ports sysclk_n]
 
@@ -177,9 +177,9 @@ set_property IOSTANDARD LVCMOS15 [get_ports gpio_sw_s]
 set_property PACKAGE_PIN AC6 [get_ports gpio_sw_w]
 set_property IOSTANDARD LVCMOS15 [get_ports gpio_sw_w]
 
-
-
-
+#
+# DAC3283 I/O
+#
 set_property PACKAGE_PIN AB27 [get_ports {dout_p[7]}]
 set_property PACKAGE_PIN AD27 [get_ports {dout_p[6]}]
 set_property PACKAGE_PIN AJ26 [get_ports {dout_p[5]}]

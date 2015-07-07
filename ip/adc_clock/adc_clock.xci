@@ -75,7 +75,7 @@
         <spirit:configurableElementValue spirit:referenceId="PARAM_VALUE.CLKOUT2_REQUESTED_OUT_FREQ">400.000</spirit:configurableElementValue>
         <spirit:configurableElementValue spirit:referenceId="PARAM_VALUE.CLKOUT2_REQUESTED_PHASE">0.000</spirit:configurableElementValue>
         <spirit:configurableElementValue spirit:referenceId="PARAM_VALUE.CLKOUT2_REQUESTED_DUTY_CYCLE">50.000</spirit:configurableElementValue>
-        <spirit:configurableElementValue spirit:referenceId="PARAM_VALUE.CLKOUT3_REQUESTED_OUT_FREQ">100.000</spirit:configurableElementValue>
+        <spirit:configurableElementValue spirit:referenceId="PARAM_VALUE.CLKOUT3_REQUESTED_OUT_FREQ">400.000</spirit:configurableElementValue>
         <spirit:configurableElementValue spirit:referenceId="PARAM_VALUE.CLKOUT3_REQUESTED_PHASE">0.000</spirit:configurableElementValue>
         <spirit:configurableElementValue spirit:referenceId="PARAM_VALUE.CLKOUT3_REQUESTED_DUTY_CYCLE">50.000</spirit:configurableElementValue>
         <spirit:configurableElementValue spirit:referenceId="PARAM_VALUE.CLKOUT4_REQUESTED_OUT_FREQ">100.000</spirit:configurableElementValue>
@@ -225,8 +225,8 @@
         <spirit:configurableElementValue spirit:referenceId="PARAM_VALUE.CLKOUT1_PHASE_ERROR">97.786</spirit:configurableElementValue>
         <spirit:configurableElementValue spirit:referenceId="PARAM_VALUE.CLKOUT2_JITTER">87.396</spirit:configurableElementValue>
         <spirit:configurableElementValue spirit:referenceId="PARAM_VALUE.CLKOUT2_PHASE_ERROR">97.786</spirit:configurableElementValue>
-        <spirit:configurableElementValue spirit:referenceId="PARAM_VALUE.CLKOUT3_JITTER">0.0</spirit:configurableElementValue>
-        <spirit:configurableElementValue spirit:referenceId="PARAM_VALUE.CLKOUT3_PHASE_ERROR">0.0</spirit:configurableElementValue>
+        <spirit:configurableElementValue spirit:referenceId="PARAM_VALUE.CLKOUT3_JITTER">87.396</spirit:configurableElementValue>
+        <spirit:configurableElementValue spirit:referenceId="PARAM_VALUE.CLKOUT3_PHASE_ERROR">97.786</spirit:configurableElementValue>
         <spirit:configurableElementValue spirit:referenceId="PARAM_VALUE.CLKOUT4_JITTER">0.0</spirit:configurableElementValue>
         <spirit:configurableElementValue spirit:referenceId="PARAM_VALUE.CLKOUT4_PHASE_ERROR">0.0</spirit:configurableElementValue>
         <spirit:configurableElementValue spirit:referenceId="PARAM_VALUE.CLKOUT5_JITTER">0.0</spirit:configurableElementValue>
@@ -300,7 +300,7 @@
         <spirit:configurableElementValue spirit:referenceId="MODELPARAM_VALUE.C_OUTCLK_SUM_ROW7">no_CLK_OUT7_output</spirit:configurableElementValue>
         <spirit:configurableElementValue spirit:referenceId="MODELPARAM_VALUE.C_CLKOUT1_REQUESTED_OUT_FREQ">200.000</spirit:configurableElementValue>
         <spirit:configurableElementValue spirit:referenceId="MODELPARAM_VALUE.C_CLKOUT2_REQUESTED_OUT_FREQ">400.000</spirit:configurableElementValue>
-        <spirit:configurableElementValue spirit:referenceId="MODELPARAM_VALUE.C_CLKOUT3_REQUESTED_OUT_FREQ">100.000</spirit:configurableElementValue>
+        <spirit:configurableElementValue spirit:referenceId="MODELPARAM_VALUE.C_CLKOUT3_REQUESTED_OUT_FREQ">400.000</spirit:configurableElementValue>
         <spirit:configurableElementValue spirit:referenceId="MODELPARAM_VALUE.C_CLKOUT4_REQUESTED_OUT_FREQ">100.000</spirit:configurableElementValue>
         <spirit:configurableElementValue spirit:referenceId="MODELPARAM_VALUE.C_CLKOUT5_REQUESTED_OUT_FREQ">100.000</spirit:configurableElementValue>
         <spirit:configurableElementValue spirit:referenceId="MODELPARAM_VALUE.C_CLKOUT6_REQUESTED_OUT_FREQ">100.000</spirit:configurableElementValue>
@@ -321,7 +321,7 @@
         <spirit:configurableElementValue spirit:referenceId="MODELPARAM_VALUE.C_CLKOUT7_REQUESTED_DUTY_CYCLE">50.000</spirit:configurableElementValue>
         <spirit:configurableElementValue spirit:referenceId="MODELPARAM_VALUE.C_CLKOUT1_OUT_FREQ">200.000</spirit:configurableElementValue>
         <spirit:configurableElementValue spirit:referenceId="MODELPARAM_VALUE.C_CLKOUT2_OUT_FREQ">400.000</spirit:configurableElementValue>
-        <spirit:configurableElementValue spirit:referenceId="MODELPARAM_VALUE.C_CLKOUT3_OUT_FREQ">100.000</spirit:configurableElementValue>
+        <spirit:configurableElementValue spirit:referenceId="MODELPARAM_VALUE.C_CLKOUT3_OUT_FREQ">400.000</spirit:configurableElementValue>
         <spirit:configurableElementValue spirit:referenceId="MODELPARAM_VALUE.C_CLKOUT4_OUT_FREQ">100.000</spirit:configurableElementValue>
         <spirit:configurableElementValue spirit:referenceId="MODELPARAM_VALUE.C_CLKOUT5_OUT_FREQ">100.000</spirit:configurableElementValue>
         <spirit:configurableElementValue spirit:referenceId="MODELPARAM_VALUE.C_CLKOUT6_OUT_FREQ">100.000</spirit:configurableElementValue>
@@ -335,7 +335,7 @@
         <spirit:configurableElementValue spirit:referenceId="MODELPARAM_VALUE.C_CLKOUT7_PHASE">0.000</spirit:configurableElementValue>
         <spirit:configurableElementValue spirit:referenceId="MODELPARAM_VALUE.C_CLKOUT1_DUTY_CYCLE">50.0</spirit:configurableElementValue>
         <spirit:configurableElementValue spirit:referenceId="MODELPARAM_VALUE.C_CLKOUT2_DUTY_CYCLE">50.0</spirit:configurableElementValue>
-        <spirit:configurableElementValue spirit:referenceId="MODELPARAM_VALUE.C_CLKOUT3_DUTY_CYCLE">50.000</spirit:configurableElementValue>
+        <spirit:configurableElementValue spirit:referenceId="MODELPARAM_VALUE.C_CLKOUT3_DUTY_CYCLE">50.0</spirit:configurableElementValue>
         <spirit:configurableElementValue spirit:referenceId="MODELPARAM_VALUE.C_CLKOUT4_DUTY_CYCLE">50.000</spirit:configurableElementValue>
         <spirit:configurableElementValue spirit:referenceId="MODELPARAM_VALUE.C_CLKOUT5_DUTY_CYCLE">50.000</spirit:configurableElementValue>
         <spirit:configurableElementValue spirit:referenceId="MODELPARAM_VALUE.C_CLKOUT6_DUTY_CYCLE">50.000</spirit:configurableElementValue>

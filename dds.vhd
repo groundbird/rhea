@@ -38,16 +38,15 @@ use work.rhea_pkg.all;
 
 entity dds is
   port (
-    clk      : in     std_logic;
-    rst      : in     std_logic;
-    en       : in     std_logic;
-    pinc     : in     std_logic_vector(31 downto 0);
-    valid    : out    std_logic;
-    cos      : out    std_logic_vector(15 downto 0);
-    sin      : out    std_logic_vector(15 downto 0);
-    busy     : out    std_logic;
-    ack      : out    std_logic;
-    set_pinc : buffer std_logic_vector(31 downto 0));
+    clk   : in  std_logic;
+    rst   : in  std_logic;
+    en    : in  std_logic;
+    pinc  : in  std_logic_vector(31 downto 0);
+    valid : out std_logic;
+    cos   : out std_logic_vector(15 downto 0);
+    sin   : out std_logic_vector(15 downto 0);
+    busy  : out std_logic;
+    ack   : out std_logic);
 end entity dds;
 
 architecture Behavioral of dds is
@@ -64,36 +63,49 @@ architecture Behavioral of dds is
   end component dds_compiler;
 
   signal dds_rstn : std_logic;
-  signal data     : std_logic_vector(31 downto 0);
+  signal pinc_buf : std_logic_vector(31 downto 0);
+  signal d        : std_logic_vector(31 downto 0);
 
   type dds_state is (idle, init, exec, fini);
   signal s_dds : dds_state;
 
 begin
 
-  sin <= data(31 downto 16);
-  cos <= data(15 downto 0);
+  Timing_Buffer_proc : process(clk)
+  begin
+    if rising_edge(clk) then
+      if rst = '1' then
+        sin <= (others => '0');
+        cos <= (others => '0');
+      else
+        sin <= d(31 downto 16);
+        cos <= d(15 downto 0);
+      end if;
+    end if;
+  end process;
 
   DDS_Compiler_inst : dds_compiler
     port map (
+      -- in
       aclk                => clk,
       aclken              => "not"(rst),
       aresetn             => dds_rstn,
       s_axis_phase_tvalid => "not"(rst),
-      s_axis_phase_tdata  => set_pinc,
+      s_axis_phase_tdata  => pinc_buf,
+      -- out
       m_axis_data_tvalid  => valid,
-      m_axis_data_tdata   => data);
+      m_axis_data_tdata   => d);
 
   busy     <= '1' when s_dds /= idle else '0';
   dds_rstn <= '0' when s_dds = init  else '1';
   ack      <= '1' when s_dds = fini  else '0';
 
   DDS_SM : process(clk)
-    variable cnt : integer range 0 to 9;
+    variable cnt : integer range 0 to 9 := 0;
   begin
     if rising_edge(clk) then
       if rst = '1' then
-        set_pinc <= (others => '0');
+        pinc_buf <= (others => '0');
         cnt      := 0;
         s_dds    <= idle;
       else
@@ -108,7 +120,7 @@ begin
 
           when init =>
             if cnt = 1 then
-              set_pinc <= pinc;
+              pinc_buf <= pinc;
               cnt      := 0;
               s_dds    <= exec;
             else
@@ -117,7 +129,8 @@ begin
             end if;
 
           when exec =>
-            if cnt = 9 then  -- 2 cycles +core latency + new input data delay
+            if cnt = 9 then
+              -- Rising DDS valid takes 9 clock after the DDS reset.
               s_dds <= fini;
             else
               cnt   := cnt + 1;

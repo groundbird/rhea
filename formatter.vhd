@@ -40,15 +40,15 @@ entity formatter is
   generic (
     d_size : integer);                  -- bytes
   port (
-    clk        : in     std_logic;
-    rst        : in     std_logic;
-    ts_rst     : in     std_logic;
-    en         : in     std_logic;
-    din        : in     byte_array(d_size-1 downto 0);
-    fifo_wr_en : out    std_logic;
-    busy       : out    std_logic;
-    ack        : buffer std_logic;
-    dout       : out    std_logic_vector(7 downto 0));
+    clk    : in     std_logic;
+    rst    : in     std_logic;
+    ts_rst : in     std_logic;
+    en     : in     std_logic;
+    din    : in     byte_array(d_size-1 downto 0);
+    valid  : out    std_logic;
+    busy   : out    std_logic;
+    ack    : buffer std_logic;
+    dout   : out    std_logic_vector(7 downto 0));
 end entity formatter;
 
 architecture Behavioral of formatter is
@@ -72,9 +72,9 @@ begin
   fmt_data(fmt_data_size-2 downto 6) <= din_buf;  -- data
   fmt_data(fmt_data_size-1)          <= x"ee";    -- footer
 
-  fifo_wr_en <= '1' when s_fmt = exec  else '0';
-  ack        <= '1' when s_fmt = fini  else '0';
-  busy       <= '1' when s_fmt /= idle else '0';
+  valid <= '1' when s_fmt = exec  else '0';
+  ack   <= '1' when s_fmt = fini  else '0';
+  busy  <= '1' when s_fmt /= idle else '0';
 
   dout <= fmt_data(cnt);
 
@@ -117,15 +117,26 @@ begin
     ts(4-i) <= ts_buf(8*i+7 downto 8*i);
   end generate Timestamp_gen;
 
-  Timestampe_proc : process(ts_rst, clk)
+  Timestampe_proc : process(clk)
   begin
-    if ts_rst = '1' then
-      ts_buf <= (others => '0');
-    elsif rising_edge(clk) then
-      ts_buf <= ts_buf + ack;
-    else
-      null;
+    if rising_edge(clk) then
+      if (ts_rst or rst) = '1' then
+        ts_buf <= (others => '0');
+      else
+        ts_buf <= ts_buf + ack;
+      end if;
     end if;
   end process;
+
+--  Timestampe_proc : process(ts_rst, clk)
+--  begin
+--    if ts_rst = '1' then
+--      ts_buf <= (others => '0');
+--    elsif rising_edge(clk) then
+--      ts_buf <= ts_buf + ack;
+--    else
+--      null;
+--    end if;
+--  end process;
 
 end architecture Behavioral;

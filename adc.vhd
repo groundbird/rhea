@@ -35,7 +35,7 @@ entity adc is
   port (
     clk    : in  std_logic;
     rst    : in  std_logic;
-    -- ADC4249 I/O
+    -- ADC I/O
     cha_p  : in  std_logic_vector(6 downto 0);
     cha_n  : in  std_logic_vector(6 downto 0);
     chb_p  : in  std_logic_vector(6 downto 0);
@@ -46,10 +46,18 @@ end adc;
 
 architecture Behavioral of adc is
 
-  signal a_ddr : std_logic_vector(6 downto 0);
-  signal b_ddr : std_logic_vector(6 downto 0);
+  signal a_ddr   : std_logic_vector(6 downto 0);
+  signal b_ddr   : std_logic_vector(6 downto 0);
+  signal rst_buf : std_logic;
 
 begin
+
+  Timing_Buffer_proc : process(clk)
+  begin
+    if rising_edge(clk) then
+      rst_buf <= rst;
+    end if;
+  end process;
 
   ADC_Data : for i in 0 to 6 generate
     Channel_A_IBUFDS_inst : IBUFDS
@@ -78,13 +86,14 @@ begin
         INIT_Q1      => '0',
         INIT_Q2      => '0',
         SRTYPE       => "ASYNC")
+--        SRTYPE       => "SYNC")
       port map (
         Q1 => dout_a(2*i),
         Q2 => dout_a(2*i+1),
         C  => clk,
         CE => '1',
         D  => a_ddr(i),
-        R  => rst,
+        R  => rst_buf,
         S  => '0');
 
     Channel_B_IDDR_inst : IDDR
@@ -93,13 +102,14 @@ begin
         INIT_Q1      => '0',
         INIT_Q2      => '0',
         SRTYPE       => "ASYNC")
+--        SRTYPE       => "SYNC")
       port map (
         Q1 => dout_b(2*i),
         Q2 => dout_b(2*i+1),
         C  => clk,
         CE => '1',
         D  => b_ddr(i),
-        R  => rst,
+        R  => rst_buf,
         S  => '0');
   end generate ADC_Data;
 

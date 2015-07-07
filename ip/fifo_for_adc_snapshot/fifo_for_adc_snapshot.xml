@@ -1131,7 +1131,7 @@
         <spirit:parameters>
           <spirit:parameter>
             <spirit:name>customizationCRC</spirit:name>
-            <spirit:value>8d4c260d</spirit:value>
+            <spirit:value>37b42132</spirit:value>
           </spirit:parameter>
           <spirit:parameter>
             <spirit:name>customizationCRCversion</spirit:name>
@@ -1139,7 +1139,7 @@
           </spirit:parameter>
           <spirit:parameter>
             <spirit:name>GENtimestamp</spirit:name>
-            <spirit:value>Tue Jun 02 00:27:00 UTC 2015</spirit:value>
+            <spirit:value>Tue Jun 23 03:24:24 UTC 2015</spirit:value>
           </spirit:parameter>
           <spirit:parameter>
             <spirit:name>StaleAtRelink</spirit:name>
@@ -1161,7 +1161,7 @@
         <spirit:parameters>
           <spirit:parameter>
             <spirit:name>customizationCRC</spirit:name>
-            <spirit:value>8d4c260d</spirit:value>
+            <spirit:value>37b42132</spirit:value>
           </spirit:parameter>
           <spirit:parameter>
             <spirit:name>customizationCRCversion</spirit:name>
@@ -1169,7 +1169,7 @@
           </spirit:parameter>
           <spirit:parameter>
             <spirit:name>GENtimestamp</spirit:name>
-            <spirit:value>Tue Jun 02 00:27:02 UTC 2015</spirit:value>
+            <spirit:value>Tue Jun 23 03:24:24 UTC 2015</spirit:value>
           </spirit:parameter>
           <spirit:parameter>
             <spirit:name>StaleAtRelink</spirit:name>
@@ -1188,7 +1188,7 @@
         <spirit:parameters>
           <spirit:parameter>
             <spirit:name>customizationCRC</spirit:name>
-            <spirit:value>8d4c260d</spirit:value>
+            <spirit:value>37b42132</spirit:value>
           </spirit:parameter>
           <spirit:parameter>
             <spirit:name>customizationCRCversion</spirit:name>
@@ -1196,59 +1196,7 @@
           </spirit:parameter>
           <spirit:parameter>
             <spirit:name>GENtimestamp</spirit:name>
-            <spirit:value>Tue Jun 02 00:27:02 UTC 2015</spirit:value>
-          </spirit:parameter>
-          <spirit:parameter>
-            <spirit:name>StaleAtRelink</spirit:name>
-            <spirit:value>false</spirit:value>
-          </spirit:parameter>
-        </spirit:parameters>
-      </spirit:view>
-      <spirit:view>
-        <spirit:name>xilinx_versioninformation</spirit:name>
-        <spirit:displayName>Version Information</spirit:displayName>
-        <spirit:envIdentifier>:vivado.xilinx.com:docs.versioninfo</spirit:envIdentifier>
-        <spirit:fileSetRef>
-          <spirit:localName>xilinx_versioninformation_view_fileset</spirit:localName>
-        </spirit:fileSetRef>
-        <spirit:parameters>
-          <spirit:parameter>
-            <spirit:name>customizationCRC</spirit:name>
-            <spirit:value>8d4c260d</spirit:value>
-          </spirit:parameter>
-          <spirit:parameter>
-            <spirit:name>customizationCRCversion</spirit:name>
-            <spirit:value>4</spirit:value>
-          </spirit:parameter>
-          <spirit:parameter>
-            <spirit:name>GENtimestamp</spirit:name>
-            <spirit:value>Tue Jun 02 00:27:02 UTC 2015</spirit:value>
-          </spirit:parameter>
-          <spirit:parameter>
-            <spirit:name>StaleAtRelink</spirit:name>
-            <spirit:value>false</spirit:value>
-          </spirit:parameter>
-        </spirit:parameters>
-      </spirit:view>
-      <spirit:view>
-        <spirit:name>xilinx_externalfiles</spirit:name>
-        <spirit:displayName>External Files</spirit:displayName>
-        <spirit:envIdentifier>:vivado.xilinx.com:external.files</spirit:envIdentifier>
-        <spirit:fileSetRef>
-          <spirit:localName>xilinx_externalfiles_view_fileset</spirit:localName>
-        </spirit:fileSetRef>
-        <spirit:parameters>
-          <spirit:parameter>
-            <spirit:name>customizationCRC</spirit:name>
-            <spirit:value>8d4c260d</spirit:value>
-          </spirit:parameter>
-          <spirit:parameter>
-            <spirit:name>customizationCRCversion</spirit:name>
-            <spirit:value>4</spirit:value>
-          </spirit:parameter>
-          <spirit:parameter>
-            <spirit:name>GENtimestamp</spirit:name>
-            <spirit:value>Thu Jan 01 00:00:00 UTC 1970</spirit:value>
+            <spirit:value>Tue Jun 23 03:24:24 UTC 2015</spirit:value>
           </spirit:parameter>
           <spirit:parameter>
             <spirit:name>StaleAtRelink</spirit:name>
@@ -1267,7 +1215,7 @@
         <spirit:parameters>
           <spirit:parameter>
             <spirit:name>customizationCRC</spirit:name>
-            <spirit:value>1234bdc2</spirit:value>
+            <spirit:value>12e4335e</spirit:value>
           </spirit:parameter>
           <spirit:parameter>
             <spirit:name>customizationCRCversion</spirit:name>
@@ -1275,7 +1223,7 @@
           </spirit:parameter>
           <spirit:parameter>
             <spirit:name>GENtimestamp</spirit:name>
-            <spirit:value>Tue Jun 02 01:33:39 UTC 2015</spirit:value>
+            <spirit:value>Tue Jun 23 03:24:24 UTC 2015</spirit:value>
           </spirit:parameter>
           <spirit:parameter>
             <spirit:name>StaleAtRelink</spirit:name>
@@ -1294,7 +1242,7 @@
         <spirit:parameters>
           <spirit:parameter>
             <spirit:name>customizationCRC</spirit:name>
-            <spirit:value>1234bdc2</spirit:value>
+            <spirit:value>12e4335e</spirit:value>
           </spirit:parameter>
           <spirit:parameter>
             <spirit:name>customizationCRCversion</spirit:name>
@@ -1302,7 +1250,59 @@
           </spirit:parameter>
           <spirit:parameter>
             <spirit:name>GENtimestamp</spirit:name>
-            <spirit:value>Tue Jun 02 01:33:39 UTC 2015</spirit:value>
+            <spirit:value>Tue Jun 23 03:24:24 UTC 2015</spirit:value>
+          </spirit:parameter>
+          <spirit:parameter>
+            <spirit:name>StaleAtRelink</spirit:name>
+            <spirit:value>false</spirit:value>
+          </spirit:parameter>
+        </spirit:parameters>
+      </spirit:view>
+      <spirit:view>
+        <spirit:name>xilinx_versioninformation</spirit:name>
+        <spirit:displayName>Version Information</spirit:displayName>
+        <spirit:envIdentifier>:vivado.xilinx.com:docs.versioninfo</spirit:envIdentifier>
+        <spirit:fileSetRef>
+          <spirit:localName>xilinx_versioninformation_view_fileset</spirit:localName>
+        </spirit:fileSetRef>
+        <spirit:parameters>
+          <spirit:parameter>
+            <spirit:name>customizationCRC</spirit:name>
+            <spirit:value>37b42132</spirit:value>
+          </spirit:parameter>
+          <spirit:parameter>
+            <spirit:name>customizationCRCversion</spirit:name>
+            <spirit:value>4</spirit:value>
+          </spirit:parameter>
+          <spirit:parameter>
+            <spirit:name>GENtimestamp</spirit:name>
+            <spirit:value>Tue Jun 23 03:24:25 UTC 2015</spirit:value>
+          </spirit:parameter>
+          <spirit:parameter>
+            <spirit:name>StaleAtRelink</spirit:name>
+            <spirit:value>false</spirit:value>
+          </spirit:parameter>
+        </spirit:parameters>
+      </spirit:view>
+      <spirit:view>
+        <spirit:name>xilinx_externalfiles</spirit:name>
+        <spirit:displayName>External Files</spirit:displayName>
+        <spirit:envIdentifier>:vivado.xilinx.com:external.files</spirit:envIdentifier>
+        <spirit:fileSetRef>
+          <spirit:localName>xilinx_externalfiles_view_fileset</spirit:localName>
+        </spirit:fileSetRef>
+        <spirit:parameters>
+          <spirit:parameter>
+            <spirit:name>customizationCRC</spirit:name>
+            <spirit:value>37b42132</spirit:value>
+          </spirit:parameter>
+          <spirit:parameter>
+            <spirit:name>customizationCRCversion</spirit:name>
+            <spirit:value>4</spirit:value>
+          </spirit:parameter>
+          <spirit:parameter>
+            <spirit:name>GENtimestamp</spirit:name>
+            <spirit:value>Thu Jan 01 00:00:00 UTC 1970</spirit:value>
           </spirit:parameter>
           <spirit:parameter>
             <spirit:name>StaleAtRelink</spirit:name>
@@ -1379,7 +1379,7 @@
           <xilinx:portInfo>
             <xilinx:enablement>
               <xilinx:presence>optional</xilinx:presence>
-              <xilinx:isEnabled xilinx:resolve="dependent" xilinx:dependency="(spirit:decode(id(&apos;MODELPARAM_VALUE.C_INTERFACE_TYPE&apos;)) = 0 and spirit:decode(id(&apos;MODELPARAM_VALUE.C_COMMON_CLOCK&apos;)) != 0)">false</xilinx:isEnabled>
+              <xilinx:isEnabled xilinx:resolve="dependent" xilinx:dependency="(spirit:decode(id(&apos;MODELPARAM_VALUE.C_INTERFACE_TYPE&apos;)) = 0 and spirit:decode(id(&apos;MODELPARAM_VALUE.C_COMMON_CLOCK&apos;)) != 0)">true</xilinx:isEnabled>
             </xilinx:enablement>
           </xilinx:portInfo>
         </spirit:vendorExtensions>
@@ -1451,7 +1451,7 @@
           <xilinx:portInfo>
             <xilinx:enablement>
               <xilinx:presence>optional</xilinx:presence>
-              <xilinx:isEnabled xilinx:resolve="dependent" xilinx:dependency="(spirit:decode(id(&apos;MODELPARAM_VALUE.C_INTERFACE_TYPE&apos;)) = 0 and spirit:decode(id(&apos;MODELPARAM_VALUE.C_COMMON_CLOCK&apos;)) = 0)">true</xilinx:isEnabled>
+              <xilinx:isEnabled xilinx:resolve="dependent" xilinx:dependency="(spirit:decode(id(&apos;MODELPARAM_VALUE.C_INTERFACE_TYPE&apos;)) = 0 and spirit:decode(id(&apos;MODELPARAM_VALUE.C_COMMON_CLOCK&apos;)) = 0)">false</xilinx:isEnabled>
             </xilinx:enablement>
           </xilinx:portInfo>
         </spirit:vendorExtensions>
@@ -1499,7 +1499,7 @@
           <xilinx:portInfo>
             <xilinx:enablement>
               <xilinx:presence>optional</xilinx:presence>
-              <xilinx:isEnabled xilinx:resolve="dependent" xilinx:dependency="(spirit:decode(id(&apos;MODELPARAM_VALUE.C_INTERFACE_TYPE&apos;)) = 0 and spirit:decode(id(&apos;MODELPARAM_VALUE.C_COMMON_CLOCK&apos;)) = 0)">true</xilinx:isEnabled>
+              <xilinx:isEnabled xilinx:resolve="dependent" xilinx:dependency="(spirit:decode(id(&apos;MODELPARAM_VALUE.C_INTERFACE_TYPE&apos;)) = 0 and spirit:decode(id(&apos;MODELPARAM_VALUE.C_COMMON_CLOCK&apos;)) = 0)">false</xilinx:isEnabled>
             </xilinx:enablement>
           </xilinx:portInfo>
         </spirit:vendorExtensions>
@@ -7336,7 +7336,7 @@
     <spirit:modelParameters>
       <spirit:modelParameter xsi:type="spirit:nameValueTypeType" spirit:dataType="integer">
         <spirit:name>C_COMMON_CLOCK</spirit:name>
-        <spirit:value spirit:format="long" spirit:resolve="generated" spirit:id="MODELPARAM_VALUE.C_COMMON_CLOCK">0</spirit:value>
+        <spirit:value spirit:format="long" spirit:resolve="generated" spirit:id="MODELPARAM_VALUE.C_COMMON_CLOCK">1</spirit:value>
       </spirit:modelParameter>
       <spirit:modelParameter spirit:dataType="integer">
         <spirit:name>C_COUNT_TYPE</spirit:name>
@@ -7440,7 +7440,7 @@
       </spirit:modelParameter>
       <spirit:modelParameter spirit:dataType="integer">
         <spirit:name>C_IMPLEMENTATION_TYPE</spirit:name>
-        <spirit:value spirit:format="long" spirit:resolve="generated" spirit:id="MODELPARAM_VALUE.C_IMPLEMENTATION_TYPE">2</spirit:value>
+        <spirit:value spirit:format="long" spirit:resolve="generated" spirit:id="MODELPARAM_VALUE.C_IMPLEMENTATION_TYPE">0</spirit:value>
       </spirit:modelParameter>
       <spirit:modelParameter spirit:dataType="integer">
         <spirit:name>C_INIT_WR_PNTR_VAL</spirit:name>
@@ -7488,11 +7488,11 @@
       </spirit:modelParameter>
       <spirit:modelParameter spirit:dataType="integer">
         <spirit:name>C_PROG_FULL_THRESH_ASSERT_VAL</spirit:name>
-        <spirit:value spirit:format="long" spirit:resolve="generated" spirit:id="MODELPARAM_VALUE.C_PROG_FULL_THRESH_ASSERT_VAL">131069</spirit:value>
+        <spirit:value spirit:format="long" spirit:resolve="generated" spirit:id="MODELPARAM_VALUE.C_PROG_FULL_THRESH_ASSERT_VAL">131070</spirit:value>
       </spirit:modelParameter>
       <spirit:modelParameter spirit:dataType="integer">
         <spirit:name>C_PROG_FULL_THRESH_NEGATE_VAL</spirit:name>
-        <spirit:value spirit:format="long" spirit:resolve="generated" spirit:id="MODELPARAM_VALUE.C_PROG_FULL_THRESH_NEGATE_VAL">131068</spirit:value>
+        <spirit:value spirit:format="long" spirit:resolve="generated" spirit:id="MODELPARAM_VALUE.C_PROG_FULL_THRESH_NEGATE_VAL">131069</spirit:value>
       </spirit:modelParameter>
       <spirit:modelParameter spirit:dataType="integer">
         <spirit:name>C_PROG_FULL_TYPE</spirit:name>
@@ -8188,6 +8188,7 @@
     <spirit:choice>
       <spirit:name>choices_5</spirit:name>
       <spirit:enumeration spirit:text="Asynchronous Reset">Asynchronous_Reset</spirit:enumeration>
+      <spirit:enumeration spirit:text="Synchronous Reset">Synchronous_Reset</spirit:enumeration>
     </spirit:choice>
     <spirit:choice>
       <spirit:name>choices_6</spirit:name>
@@ -8596,14 +8597,6 @@
     </spirit:fileSet>
     <spirit:fileSet>
       <spirit:name>xilinx_vhdlsynthesis_view_fileset</spirit:name>
-      <spirit:file>
-        <spirit:name>fifo_for_adc_snapshot/fifo_for_adc_snapshot_clocks.xdc</spirit:name>
-        <spirit:userFileType>xdc</spirit:userFileType>
-        <spirit:define>
-          <spirit:name>processing_order</spirit:name>
-          <spirit:value>late</spirit:value>
-        </spirit:define>
-      </spirit:file>
       <spirit:file>
         <spirit:name>fifo_for_adc_snapshot/fifo_for_adc_snapshot.xdc</spirit:name>
         <spirit:userFileType>xdc</spirit:userFileType>
@@ -9050,7 +9043,7 @@
       </spirit:file>
       <spirit:vendorExtensions>
         <xilinx:subCoreRef>
-          <xilinx:componentRef xsi:type="xilinx:componentRefType" xilinx:vendor="xilinx.com" xilinx:library="ip" xilinx:name="blk_mem_gen" xilinx:version="8.2" xilinx:isGenerated="true" xilinx:checksum="3b19c4c4">
+          <xilinx:componentRef xilinx:vendor="xilinx.com" xilinx:library="ip" xilinx:name="blk_mem_gen" xilinx:version="8.2" xilinx:isGenerated="true" xilinx:checksum="3b19c4c4">
             <xilinx:mode xilinx:name="copy_mode"/>
           </xilinx:componentRef>
         </xilinx:subCoreRef>
@@ -9061,49 +9054,6 @@
       <spirit:file>
         <spirit:name>synth/fifo_for_adc_snapshot.vhd</spirit:name>
         <spirit:fileType>vhdlSource</spirit:fileType>
-        <spirit:logicalName>xil_defaultlib</spirit:logicalName>
-      </spirit:file>
-    </spirit:fileSet>
-    <spirit:fileSet>
-      <spirit:name>xilinx_versioninformation_view_fileset</spirit:name>
-      <spirit:file>
-        <spirit:name>doc/fifo_generator_v12_0_changelog.txt</spirit:name>
-        <spirit:userFileType>text</spirit:userFileType>
-      </spirit:file>
-    </spirit:fileSet>
-    <spirit:fileSet>
-      <spirit:name>xilinx_externalfiles_view_fileset</spirit:name>
-      <spirit:file>
-        <spirit:name>fifo_for_adc_snapshot.dcp</spirit:name>
-        <spirit:userFileType>dcp</spirit:userFileType>
-        <spirit:userFileType>USED_IN_synthesis</spirit:userFileType>
-        <spirit:userFileType>USED_IN_implementation</spirit:userFileType>
-        <spirit:logicalName>xil_defaultlib</spirit:logicalName>
-      </spirit:file>
-      <spirit:file>
-        <spirit:name>fifo_for_adc_snapshot_stub.v</spirit:name>
-        <spirit:fileType>verilogSource</spirit:fileType>
-        <spirit:userFileType>USED_IN_synth_blackbox_stub</spirit:userFileType>
-        <spirit:logicalName>xil_defaultlib</spirit:logicalName>
-      </spirit:file>
-      <spirit:file>
-        <spirit:name>fifo_for_adc_snapshot_stub.vhdl</spirit:name>
-        <spirit:fileType>vhdlSource</spirit:fileType>
-        <spirit:userFileType>USED_IN_synth_blackbox_stub</spirit:userFileType>
-        <spirit:logicalName>xil_defaultlib</spirit:logicalName>
-      </spirit:file>
-      <spirit:file>
-        <spirit:name>fifo_for_adc_snapshot_funcsim.v</spirit:name>
-        <spirit:fileType>verilogSource</spirit:fileType>
-        <spirit:userFileType>USED_IN_simulation</spirit:userFileType>
-        <spirit:userFileType>USED_IN_single_language</spirit:userFileType>
-        <spirit:logicalName>xil_defaultlib</spirit:logicalName>
-      </spirit:file>
-      <spirit:file>
-        <spirit:name>fifo_for_adc_snapshot_funcsim.vhdl</spirit:name>
-        <spirit:fileType>vhdlSource</spirit:fileType>
-        <spirit:userFileType>USED_IN_simulation</spirit:userFileType>
-        <spirit:userFileType>USED_IN_single_language</spirit:userFileType>
         <spirit:logicalName>xil_defaultlib</spirit:logicalName>
       </spirit:file>
     </spirit:fileSet>
@@ -9268,6 +9218,49 @@
         <spirit:logicalName>xil_defaultlib</spirit:logicalName>
       </spirit:file>
     </spirit:fileSet>
+    <spirit:fileSet>
+      <spirit:name>xilinx_versioninformation_view_fileset</spirit:name>
+      <spirit:file>
+        <spirit:name>doc/fifo_generator_v12_0_changelog.txt</spirit:name>
+        <spirit:userFileType>text</spirit:userFileType>
+      </spirit:file>
+    </spirit:fileSet>
+    <spirit:fileSet>
+      <spirit:name>xilinx_externalfiles_view_fileset</spirit:name>
+      <spirit:file>
+        <spirit:name>fifo_for_adc_snapshot.dcp</spirit:name>
+        <spirit:userFileType>dcp</spirit:userFileType>
+        <spirit:userFileType>USED_IN_synthesis</spirit:userFileType>
+        <spirit:userFileType>USED_IN_implementation</spirit:userFileType>
+        <spirit:logicalName>xil_defaultlib</spirit:logicalName>
+      </spirit:file>
+      <spirit:file>
+        <spirit:name>fifo_for_adc_snapshot_stub.v</spirit:name>
+        <spirit:fileType>verilogSource</spirit:fileType>
+        <spirit:userFileType>USED_IN_synth_blackbox_stub</spirit:userFileType>
+        <spirit:logicalName>xil_defaultlib</spirit:logicalName>
+      </spirit:file>
+      <spirit:file>
+        <spirit:name>fifo_for_adc_snapshot_stub.vhdl</spirit:name>
+        <spirit:fileType>vhdlSource</spirit:fileType>
+        <spirit:userFileType>USED_IN_synth_blackbox_stub</spirit:userFileType>
+        <spirit:logicalName>xil_defaultlib</spirit:logicalName>
+      </spirit:file>
+      <spirit:file>
+        <spirit:name>fifo_for_adc_snapshot_funcsim.v</spirit:name>
+        <spirit:fileType>verilogSource</spirit:fileType>
+        <spirit:userFileType>USED_IN_simulation</spirit:userFileType>
+        <spirit:userFileType>USED_IN_single_language</spirit:userFileType>
+        <spirit:logicalName>xil_defaultlib</spirit:logicalName>
+      </spirit:file>
+      <spirit:file>
+        <spirit:name>fifo_for_adc_snapshot_funcsim.vhdl</spirit:name>
+        <spirit:fileType>vhdlSource</spirit:fileType>
+        <spirit:userFileType>USED_IN_simulation</spirit:userFileType>
+        <spirit:userFileType>USED_IN_single_language</spirit:userFileType>
+        <spirit:logicalName>xil_defaultlib</spirit:logicalName>
+      </spirit:file>
+    </spirit:fileSet>
   </spirit:fileSets>
   <spirit:description>The FIFO Generator is a parameterizable first-in/first-out memory queue generator. Use it to generate resource and performance optimized FIFOs with common or independent read/write clock domains, and optional fixed or programmable full and empty flags and handshaking signals.  Choose from a selection of memory resource types for implementation.  Optional Hamming code based error detection and correction as well as error injection capability for system test help to insure data integrity.  FIFO width and depth are parameterizable, and for native interface FIFOs, asymmetric read and write port widths are also supported.</spirit:description>
   <spirit:parameters>
@@ -9285,7 +9278,7 @@
     </spirit:parameter>
     <spirit:parameter>
       <spirit:name>Fifo_Implementation</spirit:name>
-      <spirit:value spirit:resolve="user" spirit:id="PARAM_VALUE.Fifo_Implementation" spirit:choiceRef="choices_0" spirit:order="2">Independent_Clocks_Block_RAM</spirit:value>
+      <spirit:value spirit:resolve="user" spirit:id="PARAM_VALUE.Fifo_Implementation" spirit:choiceRef="choices_0" spirit:order="2">Common_Clock_Block_RAM</spirit:value>
       <spirit:vendorExtensions>
         <xilinx:parameterInfo>
           <xilinx:enablement>
@@ -9386,7 +9379,7 @@
         <xilinx:parameterInfo>
           <xilinx:enablement>
             <xilinx:presence>optional</xilinx:presence>
-            <xilinx:isEnabled xilinx:resolve="dependent">true</xilinx:isEnabled>
+            <xilinx:isEnabled xilinx:resolve="dependent">false</xilinx:isEnabled>
           </xilinx:enablement>
         </xilinx:parameterInfo>
       </spirit:vendorExtensions>
@@ -9446,7 +9439,7 @@
         <xilinx:parameterInfo>
           <xilinx:enablement>
             <xilinx:presence>optional</xilinx:presence>
-            <xilinx:isEnabled xilinx:resolve="dependent">true</xilinx:isEnabled>
+            <xilinx:isEnabled xilinx:resolve="dependent">false</xilinx:isEnabled>
           </xilinx:enablement>
         </xilinx:parameterInfo>
       </spirit:vendorExtensions>
@@ -9458,7 +9451,7 @@
         <xilinx:parameterInfo>
           <xilinx:enablement>
             <xilinx:presence>optional</xilinx:presence>
-            <xilinx:isEnabled xilinx:resolve="dependent">false</xilinx:isEnabled>
+            <xilinx:isEnabled xilinx:resolve="dependent">true</xilinx:isEnabled>
           </xilinx:enablement>
         </xilinx:parameterInfo>
       </spirit:vendorExtensions>
@@ -9686,7 +9679,7 @@
         <xilinx:parameterInfo>
           <xilinx:enablement>
             <xilinx:presence>optional</xilinx:presence>
-            <xilinx:isEnabled xilinx:resolve="dependent">false</xilinx:isEnabled>
+            <xilinx:isEnabled xilinx:resolve="dependent">true</xilinx:isEnabled>
           </xilinx:enablement>
         </xilinx:parameterInfo>
       </spirit:vendorExtensions>
@@ -9710,7 +9703,7 @@
         <xilinx:parameterInfo>
           <xilinx:enablement>
             <xilinx:presence>optional</xilinx:presence>
-            <xilinx:isEnabled xilinx:resolve="dependent">true</xilinx:isEnabled>
+            <xilinx:isEnabled xilinx:resolve="dependent">false</xilinx:isEnabled>
           </xilinx:enablement>
         </xilinx:parameterInfo>
       </spirit:vendorExtensions>
@@ -9734,7 +9727,7 @@
         <xilinx:parameterInfo>
           <xilinx:enablement>
             <xilinx:presence>optional</xilinx:presence>
-            <xilinx:isEnabled xilinx:resolve="dependent">true</xilinx:isEnabled>
+            <xilinx:isEnabled xilinx:resolve="dependent">false</xilinx:isEnabled>
           </xilinx:enablement>
         </xilinx:parameterInfo>
       </spirit:vendorExtensions>
@@ -9801,7 +9794,7 @@
     </spirit:parameter>
     <spirit:parameter>
       <spirit:name>Full_Threshold_Assert_Value</spirit:name>
-      <spirit:value spirit:format="long" spirit:resolve="user" spirit:id="PARAM_VALUE.Full_Threshold_Assert_Value" spirit:order="41" spirit:minimum="4" spirit:maximum="131069">131069</spirit:value>
+      <spirit:value spirit:format="long" spirit:resolve="user" spirit:id="PARAM_VALUE.Full_Threshold_Assert_Value" spirit:order="41" spirit:minimum="4" spirit:maximum="131070">131070</spirit:value>
       <spirit:vendorExtensions>
         <xilinx:parameterInfo>
           <xilinx:enablement>
@@ -9813,7 +9806,7 @@
     </spirit:parameter>
     <spirit:parameter>
       <spirit:name>Full_Threshold_Negate_Value</spirit:name>
-      <spirit:value spirit:format="long" spirit:resolve="user" spirit:id="PARAM_VALUE.Full_Threshold_Negate_Value" spirit:order="42" spirit:minimum="3" spirit:maximum="131068">131068</spirit:value>
+      <spirit:value spirit:format="long" spirit:resolve="user" spirit:id="PARAM_VALUE.Full_Threshold_Negate_Value" spirit:order="42" spirit:minimum="3" spirit:maximum="131069">131069</spirit:value>
       <spirit:vendorExtensions>
         <xilinx:parameterInfo>
           <xilinx:enablement>
@@ -9837,7 +9830,7 @@
     </spirit:parameter>
     <spirit:parameter>
       <spirit:name>Empty_Threshold_Assert_Value</spirit:name>
-      <spirit:value spirit:format="long" spirit:resolve="user" spirit:id="PARAM_VALUE.Empty_Threshold_Assert_Value" spirit:order="44" spirit:minimum="2" spirit:maximum="131067">2</spirit:value>
+      <spirit:value spirit:format="long" spirit:resolve="user" spirit:id="PARAM_VALUE.Empty_Threshold_Assert_Value" spirit:order="44" spirit:minimum="2" spirit:maximum="131068">2</spirit:value>
       <spirit:vendorExtensions>
         <xilinx:parameterInfo>
           <xilinx:enablement>
@@ -9849,7 +9842,7 @@
     </spirit:parameter>
     <spirit:parameter>
       <spirit:name>Empty_Threshold_Negate_Value</spirit:name>
-      <spirit:value spirit:format="long" spirit:resolve="user" spirit:id="PARAM_VALUE.Empty_Threshold_Negate_Value" spirit:order="45" spirit:minimum="3" spirit:maximum="131068">3</spirit:value>
+      <spirit:value spirit:format="long" spirit:resolve="user" spirit:id="PARAM_VALUE.Empty_Threshold_Negate_Value" spirit:order="45" spirit:minimum="3" spirit:maximum="131069">3</spirit:value>
       <spirit:vendorExtensions>
         <xilinx:parameterInfo>
           <xilinx:enablement>
