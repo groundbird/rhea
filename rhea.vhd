@@ -614,29 +614,12 @@ begin
 
   ds_valid <= and_reduce(dsi_valid & dsq_valid);
 
---  Convert_iqarray_to_byte_array : for i in 0 to N_CHANNEL-1 generate
---    Serialize_IQ_Data : for j in 0 to IQ_DATA_WIDTH/8-1 generate
---      fmt_iq_data(IQ_DATA_WIDTH/4*i + j)                 <= i_data_ds(i)(8*j+7 downto 8*j);
---      fmt_iq_data(IQ_DATA_WIDTH/4*i + j+IQ_DATA_WIDTH/8) <= q_data_ds(i)(8*j+7 downto 8*j);
---    end generate Serialize_IQ_Data;
---  end generate Convert_iqarray_to_byte_array;
-
   Convert_iqarray_to_byte_array : for i in 0 to N_CHANNEL-1 generate
     Serialize_IQ_Data : for j in 0 to IQ_DATA_WIDTH/8-1 generate
       fmt_iq_data(IQ_DATA_WIDTH/4*(i+1)-j-8) <= i_data_ds(i)(8*j+7 downto 8*j);
       fmt_iq_data(IQ_DATA_WIDTH/4*(i+1)-j-1) <= q_data_ds(i)(8*j+7 downto 8*j);
     end generate Serialize_IQ_Data;
   end generate Convert_iqarray_to_byte_array;
-
---  constant iq_dsize : integer := 7;
-
---  Serialize_IQ_Data : for j in 0 to 6 generate
---    fmt_iq_data(13 - j) <= cos_debug(8*j+7 downto 8*j);
---    fmt_iq_data(6 - j)  <= sin_debug(8*j+7 downto 8*j);
---  end generate Serialize_IQ_Data;
-
---  cos_debug <= conv_std_logic_vector(signed(cos), 56);
---  sin_debug <= conv_std_logic_vector(signed(sin), 56);
 
   ---------------------------------------------------------------------------
   -- Data Transfer to SiTCP
@@ -859,7 +842,7 @@ begin
   gpio_led(6) <= tcp_tx_full;
   gpio_led(5) <= adc_rst;
   gpio_led(4) <= iq_busy;
-  gpio_led(3) <= '0';
+  gpio_led(3) <= rbcp_act;
   gpio_led(2) <= '0';
   gpio_led(1) <= '0';
   gpio_led(0) <= '0';
