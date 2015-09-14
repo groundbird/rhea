@@ -41,6 +41,7 @@ entity iq_reader is
     clk      : in  std_logic;
     rst      : in  std_logic;
     req      : in  std_logic;
+--    tgl      : in  std_logic;
     fmt_busy : in  std_logic;
     valid    : out std_logic;
     busy     : out std_logic;
@@ -66,6 +67,7 @@ begin
       else
         case s_iq is
           when idle =>
+--            if req = '1' and tgl = '1' and fmt_busy = '0' then
             if req = '1' and fmt_busy = '0' then
               s_iq <= init;
             else

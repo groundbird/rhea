@@ -130,12 +130,15 @@ begin
 
   -- Clocking PRIMITIVE
   --------------------------------------
+
   -- Instantiation of the MMCM PRIMITIVE
   --    * Unused inputs are tied off
   --    * Unused outputs are labeled unused
   mmcm_adv_inst : MMCME2_ADV
   generic map
    (BANDWIDTH            => "OPTIMIZED",
+
+    
     CLKOUT4_CASCADE      => FALSE,
     COMPENSATION         => "ZHOLD",
     STARTUP_WAIT         => FALSE,
@@ -151,8 +154,7 @@ begin
     CLKOUT1_PHASE        => 0.000,
     CLKOUT1_DUTY_CYCLE   => 0.500,
     CLKOUT1_USE_FINE_PS  => FALSE,
-    CLKIN1_PERIOD        => 5.0,
-    REF_JITTER1          => 0.010)
+    CLKIN1_PERIOD        => 5.0)
   port map
     -- Output clocks
    (

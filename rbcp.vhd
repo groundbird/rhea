@@ -47,11 +47,15 @@ entity rbcp is
     rbcp_rd   : out std_logic_vector(7 downto 0);
     rbcp_ack  : out std_logic;
     -- Module I/O
-    req       : out std_logic;
+    pinc_reg  : in  std_logic_vector(31 downto 0);
     ack       : in  std_logic;
+    req       : out std_logic;
     rxd       : in  std_logic_vector(d_width-1 downto 0);
+--    rxd       : in  std_logic_vector(7 downto 0);
     spi_txd   : out std_logic_vector(d_width-1 downto 0);
-    dds_pinc  : out std_logic_vector(31 downto 0));
+    dds_pinc  : out std_logic_vector(31 downto 0);
+--    iq_mode   : out std_logic_vector(1 downto 0);
+    busy      : out std_logic);
 end rbcp;
 
 architecture Behavioral of rbcp is
@@ -60,6 +64,8 @@ architecture Behavioral of rbcp is
   signal s_rbcp : rbcp_state;
 
 begin
+
+  busy <= '1' when s_rbcp /= idle else '0';
 
   RBCP_SM_proc : process(clk)
   begin
@@ -92,6 +98,8 @@ begin
             req <= '0';
             if ack = '1' then
               s_rbcp <= fini;
+--            elsif rbcp_addr(31 downto 28) = x"6" then
+--              s_rbcp <= fini;
             else
               s_rbcp <= tx;
             end if;
@@ -100,6 +108,13 @@ begin
             rbcp_ack <= '1';
             s_rbcp   <= init;
             rbcp_rd  <= rxd(7 downto 0);
+
+--            case rbcp_addr(31 downto 28) is
+--              when x"1"   => rbcp_rd <= rxd(7 downto 0);
+--              when x"2"   => rbcp_rd <= rxd(7 downto 0);
+--              when x"6"   => rbcp_rd <= pinc_reg(31 downto 24);
+--              when others => null;
+--            end case;
             
           when others => s_rbcp <= init;
         end case;
@@ -113,6 +128,7 @@ begin
       if rst = '1' then
         spi_txd  <= (others => '0');
         dds_pinc <= (others => '0');
+--        iq_tgl  <= '0';
       else
         case rbcp_addr(31 downto 24) is
           when x"10" =>
@@ -140,6 +156,27 @@ begin
               when x"3"   => dds_pinc(7 downto 0)   <= rbcp_wd;
               when others => null;
             end case;
+
+--          when x"41" =>
+--            -- Read frequency
+            
+
+--          when x"50" =>
+--            -- Turn on IQ reader
+--            iq_tgl <= '1';
+--          when x"51" =>
+--            -- Turn off IQ reader
+--            iq_tgl <= '0';
+
+--          when x"61" =>
+--            -- Check phase increment
+--            case rbcp_addr(3 downto 0) is
+--              when x"0"   => rxd <= dds_pinc(31 downto 24);
+----              when x"1"   => rxd <= dds_pinc(23 downto 16);
+----              when x"2"   => rxd <= dds_pinc(15 downto 8);
+----              when x"3"   => rxd <= dds_pinc(7 downto 0);
+--              when others => null;
+--            end case;
             
           when others => null;
         end case;

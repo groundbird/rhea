@@ -205,6 +205,7 @@ architecture Behavioral of rhea is
       clk      : in  std_logic;
       rst      : in  std_logic;
       req      : in  std_logic;
+--      tgl      : in  std_logic;
       fmt_busy : in  std_logic;
       valid    : out std_logic;
       busy     : out std_logic;
@@ -212,6 +213,7 @@ architecture Behavioral of rhea is
   end component iq_reader;
 
   signal iq_req  : std_logic;
+--  signal iq_tgl  : std_logic;
   signal iq_en   : std_logic;
   signal iq_busy : std_logic;
   signal iq_ack  : std_logic;
@@ -353,15 +355,23 @@ architecture Behavioral of rhea is
       req       : out std_logic;
       ack       : in  std_logic;
       rxd       : in  std_logic_vector(d_width-1 downto 0);
+--      rxd : in std_logic_vector(7 downto 0);
       spi_txd   : out std_logic_vector(d_width-1 downto 0);
-      dds_pinc  : out std_logic_vector(31 downto 0));
+      dds_pinc  : out std_logic_vector(31 downto 0);
+--      iq_tgl    : out std_logic;
+      busy      : out std_logic);
   end component rbcp;
 
   signal sft_rst      : std_logic;
   signal rbcp_mdl_req : std_logic;
   signal rbcp_mdl_ack : std_logic;
   signal rbcp_mdl_rxd : std_logic_vector(15 downto 0);
+--  signal rbcp_mdl_rxd : std_logic_vector(7 downto 0);
   signal rbcp_id      : std_logic_vector(3 downto 0);
+  signal rbcp_busy    : std_logic;
+
+  signal chk_pinc_en : std_logic;
+  signal chk_pinc    : std_logic_vector(7 downto 0);
 
   component spi_master is
     generic (
@@ -449,6 +459,17 @@ architecture Behavioral of rhea is
   signal dsq_valid : std_logic_vector(N_CHANNEL-1 downto 0);
   signal i_data_ds : iq_array;
   signal q_data_ds : iq_array;
+
+  component state_checker is
+    port (
+      clk : in  std_logic;
+      rst : in  std_logic;
+      req : in  std_logic;
+      ack : out std_logic);
+  end component state_checker;
+
+  signal stat_chk_req : std_logic;
+  signal stat_chk_ack : std_logic;
 
   ---------------------------------------------------------------------------
   -- Debug
@@ -567,10 +588,13 @@ begin
   --------------------------------------------------------------------------
   IQ_Reader_inst : iq_reader
     port map (
+      -- in
       clk      => clk_adc,
       rst      => adc_rst,
       req      => iq_req,
+--      tgl      => iq_tgl,
       fmt_busy => fmt_busy,
+      -- out
       valid    => iq_en,
       busy     => iq_busy,
       ack      => iq_ack);
@@ -690,6 +714,7 @@ begin
     generic map (
       d_width => 16)
     port map (
+      -- in
       clk       => clk_200,
       rst       => sitcp_rst or sys_rst,
       rbcp_act  => rbcp_act,
@@ -703,7 +728,9 @@ begin
       ack       => rbcp_mdl_ack,
       rxd       => rbcp_mdl_rxd,
       spi_txd   => spi_txd,
-      dds_pinc  => dds_pinc);
+      dds_pinc  => dds_pinc,
+--      iq_tgl    => iq_tgl,
+      busy      => rbcp_busy);
 
   rbcp_id <= rbcp_addr(31 downto 28);   -- Control module ID
                                         --
@@ -713,19 +740,25 @@ begin
                                         -- x"3": ADC Snapshot
                                         -- x"4": Set Frequency for DDS
                                         -- x"5": I/Q Data Readout
+                                        -- x"6": Read state
                                         --
                                         -- x"F": Reset
                                         --
 
-  spi_req    <= rbcp_mdl_req when rbcp_id = x"1" or rbcp_id = x"2" else '0';
-  adc_ss_trg <= rbcp_mdl_req when rbcp_id = x"3"                   else '0';
-  dds_en     <= rbcp_mdl_req when rbcp_id = x"4"                   else '0';
-  iq_req     <= rbcp_mdl_req when rbcp_id = x"5"                   else '0';
-  cmd_rst    <= rbcp_mdl_req when rbcp_id = x"f"                   else '0';
+  spi_req      <= rbcp_mdl_req when rbcp_id = x"1" or rbcp_id = x"2" else '0';
+  adc_ss_trg   <= rbcp_mdl_req when rbcp_id = x"3"                   else '0';
+  dds_en       <= rbcp_mdl_req when rbcp_id = x"4"                   else '0';
+  iq_req       <= rbcp_mdl_req when rbcp_id = x"5"                   else '0';
+  stat_chk_req <= rbcp_mdl_req when rbcp_id = x"6"                   else '0';
+--  cmd_rst     <= rbcp_mdl_req when rbcp_id = x"f"                   else '0';
 
   sft_rst      <= adc_ss_trg or dds_en or iq_req;
-  rbcp_mdl_ack <= spi_ack or adc_ss_ack or dds_ack or iq_ack;
-  rbcp_mdl_rxd <= spi_rxd;
+  rbcp_mdl_ack <= spi_ack or adc_ss_ack or dds_ack or iq_ack or stat_chk_ack;
+  rbcp_mdl_rxd <= spi_rxd when rbcp_id = x"1" or rbcp_id = x"2" else
+                  x"000" & "000" & iq_busy when rbcp_id = x"6" else x"0000";
+--  rbcp_mdl_rxd <= spi_rxd(7 downto 0);
+--  rbcp_mdl_rxd <= spi_rxd(7 downto 0) when rbcp_id = x"1" or rbcp_id = x"2" else
+--                  chk_pinc when rbcp_id = x"6";
 
 --  process(clk_200)
 --    variable cnt : integer range 0 to 1999999;  -- wait 10 ms
@@ -836,6 +869,16 @@ begin
   end generate Demodulation;
 
   ---------------------------------------------------------------------------
+  -- State Checker
+  ---------------------------------------------------------------------------
+  State_Checker_inst : state_checker
+    port map (
+      clk => clk_200,
+      rst => sys_rst,
+      req => stat_chk_req,
+      ack => stat_chk_ack);
+
+  ---------------------------------------------------------------------------
   -- GPIO LED
   ---------------------------------------------------------------------------
   gpio_led(7) <= gmii_1000m;
@@ -843,7 +886,7 @@ begin
   gpio_led(5) <= adc_rst;
   gpio_led(4) <= iq_busy;
   gpio_led(3) <= rbcp_act;
-  gpio_led(2) <= '0';
+  gpio_led(2) <= rbcp_busy;
   gpio_led(1) <= '0';
   gpio_led(0) <= '0';
 

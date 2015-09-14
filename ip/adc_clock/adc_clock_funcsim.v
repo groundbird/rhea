@@ -1,7 +1,7 @@
-// Copyright 1986-2014 Xilinx, Inc. All Rights Reserved.
+// Copyright 1986-2015 Xilinx, Inc. All Rights Reserved.
 // --------------------------------------------------------------------------------
-// Tool Version: Vivado v.2014.2 (win64) Build 932637 Wed Jun 11 13:33:10 MDT 2014
-// Date        : Mon Jul 06 19:09:15 2015
+// Tool Version: Vivado v.2015.2 (win64) Build 1266856 Fri Jun 26 16:35:25 MDT 2015
+// Date        : Fri Jul 31 18:38:55 2015
 // Host        : rhea running 64-bit Service Pack 1  (build 7601)
 // Command     : write_verilog -force -mode funcsim
 //               C:/Users/hikaru/readout/rhea/project_3/project_3.srcs/sources_1/ip/adc_clock/adc_clock_funcsim.v
@@ -28,14 +28,14 @@ module adc_clock
   input reset;
   output locked;
 
-(* DIFF_TERM=0 *) (* IBUF_LOW_PWR *)   wire clk_in1_n;
-(* DIFF_TERM=0 *) (* IBUF_LOW_PWR *)   wire clk_in1_p;
+  (* DIFF_TERM = 0 *) (* IBUF_LOW_PWR *) wire clk_in1_n;
+  (* DIFF_TERM = 0 *) (* IBUF_LOW_PWR *) wire clk_in1_p;
   wire clk_out1;
   wire clk_out2;
   wire locked;
   wire reset;
 
-adc_clock_adc_clock_clk_wiz U0
+  adc_clock_adc_clock_clk_wiz U0
        (.clk_in1_n(clk_in1_n),
         .clk_in1_p(clk_in1_p),
         .clk_out1(clk_out1),
@@ -60,8 +60,8 @@ module adc_clock_adc_clock_clk_wiz
   output locked;
 
   wire clk_in1_adc_clock;
-(* DIFF_TERM=0 *) (* IBUF_LOW_PWR *)   wire clk_in1_n;
-(* DIFF_TERM=0 *) (* IBUF_LOW_PWR *)   wire clk_in1_p;
+  wire clk_in1_n;
+  wire clk_in1_p;
   wire clk_out1;
   wire clk_out1_adc_clock;
   wire clk_out2;
@@ -86,31 +86,31 @@ module adc_clock_adc_clock_clk_wiz
   wire NLW_mmcm_adv_inst_PSDONE_UNCONNECTED;
   wire [15:0]NLW_mmcm_adv_inst_DO_UNCONNECTED;
 
-(* box_type = "PRIMITIVE" *) 
-   BUFG clkf_buf
+  (* box_type = "PRIMITIVE" *) 
+  BUFG clkf_buf
        (.I(clkfbout_adc_clock),
         .O(clkfbout_buf_adc_clock));
-(* CAPACITANCE = "DONT_CARE" *) 
-   (* IBUF_DELAY_VALUE = "0" *) 
-   (* IFD_DELAY_VALUE = "AUTO" *) 
-   (* box_type = "PRIMITIVE" *) 
-   IBUFDS #(
+  (* CAPACITANCE = "DONT_CARE" *) 
+  (* IBUF_DELAY_VALUE = "0" *) 
+  (* IFD_DELAY_VALUE = "AUTO" *) 
+  (* box_type = "PRIMITIVE" *) 
+  IBUFDS #(
     .DQS_BIAS("FALSE"),
     .IOSTANDARD("DEFAULT")) 
-     clkin1_ibufgds
+    clkin1_ibufgds
        (.I(clk_in1_p),
         .IB(clk_in1_n),
         .O(clk_in1_adc_clock));
-(* box_type = "PRIMITIVE" *) 
-   BUFG clkout1_buf
+  (* box_type = "PRIMITIVE" *) 
+  BUFG clkout1_buf
        (.I(clk_out1_adc_clock),
         .O(clk_out1));
-(* box_type = "PRIMITIVE" *) 
-   BUFG clkout2_buf
+  (* box_type = "PRIMITIVE" *) 
+  BUFG clkout2_buf
        (.I(clk_out2_adc_clock),
         .O(clk_out2));
-(* box_type = "PRIMITIVE" *) 
-   MMCME2_ADV #(
+  (* box_type = "PRIMITIVE" *) 
+  MMCME2_ADV #(
     .BANDWIDTH("OPTIMIZED"),
     .CLKFBOUT_MULT_F(4.000000),
     .CLKFBOUT_PHASE(0.000000),
@@ -153,13 +153,13 @@ module adc_clock_adc_clock_clk_wiz
     .IS_PSINCDEC_INVERTED(1'b0),
     .IS_PWRDWN_INVERTED(1'b0),
     .IS_RST_INVERTED(1'b0),
-    .REF_JITTER1(0.010000),
+    .REF_JITTER1(0.000000),
     .REF_JITTER2(0.000000),
     .SS_EN("FALSE"),
     .SS_MODE("CENTER_HIGH"),
     .SS_MOD_PERIOD(10000),
     .STARTUP_WAIT("FALSE")) 
-     mmcm_adv_inst
+    mmcm_adv_inst
        (.CLKFBIN(clkfbout_buf_adc_clock),
         .CLKFBOUT(clkfbout_adc_clock),
         .CLKFBOUTB(NLW_mmcm_adv_inst_CLKFBOUTB_UNCONNECTED),

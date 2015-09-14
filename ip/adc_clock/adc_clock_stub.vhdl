@@ -1,7 +1,7 @@
--- Copyright 1986-2014 Xilinx, Inc. All Rights Reserved.
+-- Copyright 1986-2015 Xilinx, Inc. All Rights Reserved.
 -- --------------------------------------------------------------------------------
--- Tool Version: Vivado v.2014.2 (win64) Build 932637 Wed Jun 11 13:33:10 MDT 2014
--- Date        : Mon Jul 06 19:09:15 2015
+-- Tool Version: Vivado v.2015.2 (win64) Build 1266856 Fri Jun 26 16:35:25 MDT 2015
+-- Date        : Fri Jul 31 18:38:55 2015
 -- Host        : rhea running 64-bit Service Pack 1  (build 7601)
 -- Command     : write_vhdl -force -mode synth_stub
 --               C:/Users/hikaru/readout/rhea/project_3/project_3.srcs/sources_1/ip/adc_clock/adc_clock_stub.vhdl

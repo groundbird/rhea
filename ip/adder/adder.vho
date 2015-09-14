@@ -47,7 +47,7 @@
 -- DO NOT MODIFY THIS FILE.
 
 -- IP VLNV: xilinx.com:ip:c_addsub:12.0
--- IP Revision: 4
+-- IP Revision: 6
 
 -- The following code must appear in the VHDL architecture header.
 
@@ -60,11 +60,6 @@ COMPONENT adder
     S : OUT STD_LOGIC_VECTOR(30 DOWNTO 0)
   );
 END COMPONENT;
-ATTRIBUTE SYN_BLACK_BOX : BOOLEAN;
-ATTRIBUTE SYN_BLACK_BOX OF adder : COMPONENT IS TRUE;
-ATTRIBUTE BLACK_BOX_PAD_PIN : STRING;
-ATTRIBUTE BLACK_BOX_PAD_PIN OF adder : COMPONENT IS "A[29:0],B[29:0],CLK,S[30:0]";
-
 -- COMP_TAG_END ------ End COMPONENT Declaration ------------
 
 -- The following code must appear in the VHDL architecture

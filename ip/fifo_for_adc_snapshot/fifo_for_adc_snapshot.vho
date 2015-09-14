@@ -47,7 +47,7 @@
 -- DO NOT MODIFY THIS FILE.
 
 -- IP VLNV: xilinx.com:ip:fifo_generator:12.0
--- IP Revision: 1
+-- IP Revision: 4
 
 -- The following code must appear in the VHDL architecture header.
 
@@ -65,11 +65,6 @@ COMPONENT fifo_for_adc_snapshot
     empty : OUT STD_LOGIC
   );
 END COMPONENT;
-ATTRIBUTE SYN_BLACK_BOX : BOOLEAN;
-ATTRIBUTE SYN_BLACK_BOX OF fifo_for_adc_snapshot : COMPONENT IS TRUE;
-ATTRIBUTE BLACK_BOX_PAD_PIN : STRING;
-ATTRIBUTE BLACK_BOX_PAD_PIN OF fifo_for_adc_snapshot : COMPONENT IS "clk,rst,din[31:0],wr_en,rd_en,dout[31:0],full,almost_full,empty";
-
 -- COMP_TAG_END ------ End COMPONENT Declaration ------------
 
 -- The following code must appear in the VHDL architecture

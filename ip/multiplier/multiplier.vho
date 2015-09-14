@@ -47,7 +47,7 @@
 -- DO NOT MODIFY THIS FILE.
 
 -- IP VLNV: xilinx.com:ip:mult_gen:12.0
--- IP Revision: 5
+-- IP Revision: 8
 
 -- The following code must appear in the VHDL architecture header.
 
@@ -60,11 +60,6 @@ COMPONENT multiplier
     P : OUT STD_LOGIC_VECTOR(29 DOWNTO 0)
   );
 END COMPONENT;
-ATTRIBUTE SYN_BLACK_BOX : BOOLEAN;
-ATTRIBUTE SYN_BLACK_BOX OF multiplier : COMPONENT IS TRUE;
-ATTRIBUTE BLACK_BOX_PAD_PIN : STRING;
-ATTRIBUTE BLACK_BOX_PAD_PIN OF multiplier : COMPONENT IS "CLK,A[13:0],B[15:0],P[29:0]";
-
 -- COMP_TAG_END ------ End COMPONENT Declaration ------------
 
 -- The following code must appear in the VHDL architecture

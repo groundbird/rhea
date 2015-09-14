@@ -38,15 +38,16 @@ use work.rhea_pkg.all;
 
 entity dds is
   port (
-    clk   : in  std_logic;
-    rst   : in  std_logic;
-    en    : in  std_logic;
-    pinc  : in  std_logic_vector(31 downto 0);
-    valid : out std_logic;
-    cos   : out std_logic_vector(15 downto 0);
-    sin   : out std_logic_vector(15 downto 0);
-    busy  : out std_logic;
-    ack   : out std_logic);
+    clk      : in     std_logic;
+    rst      : in     std_logic;
+    en       : in     std_logic;
+    pinc     : in     std_logic_vector(31 downto 0);
+    pinc_reg : buffer std_logic_vector(31 downto 0);
+    valid    : out    std_logic;
+    cos      : out    std_logic_vector(15 downto 0);
+    sin      : out    std_logic_vector(15 downto 0);
+    busy     : out    std_logic;
+    ack      : out    std_logic);
 end entity dds;
 
 architecture Behavioral of dds is
@@ -63,7 +64,6 @@ architecture Behavioral of dds is
   end component dds_compiler;
 
   signal dds_rstn : std_logic;
-  signal pinc_buf : std_logic_vector(31 downto 0);
   signal d        : std_logic_vector(31 downto 0);
 
   type dds_state is (idle, init, exec, fini);
@@ -91,7 +91,7 @@ begin
       aclken              => "not"(rst),
       aresetn             => dds_rstn,
       s_axis_phase_tvalid => "not"(rst),
-      s_axis_phase_tdata  => pinc_buf,
+      s_axis_phase_tdata  => pinc_reg,
       -- out
       m_axis_data_tvalid  => valid,
       m_axis_data_tdata   => d);
@@ -105,7 +105,7 @@ begin
   begin
     if rising_edge(clk) then
       if rst = '1' then
-        pinc_buf <= (others => '0');
+        pinc_reg <= (others => '0');
         cnt      := 0;
         s_dds    <= idle;
       else
@@ -120,7 +120,7 @@ begin
 
           when init =>
             if cnt = 1 then
-              pinc_buf <= pinc;
+              pinc_reg <= pinc;
               cnt      := 0;
               s_dds    <= exec;
             else

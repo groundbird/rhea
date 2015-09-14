@@ -72,6 +72,20 @@ architecture Behavioral of adc_snapshot is
       empty       : out std_logic);
   end component fifo_for_adc_snapshot;
 
+--  component fifo_for_adc_snapshot is
+--    port (
+--      clk         : in  std_logic;
+--      srst        : in  std_logic;
+--      din         : in  std_logic_vector(31 downto 0);
+--      wr_en       : in  std_logic;
+--      rd_en       : in  std_logic;
+--      dout        : out std_logic_vector(31 downto 0);
+--      full        : out std_logic;
+--      empty       : out std_logic;
+--      wr_rst_busy : out std_logic;
+--      rd_rst_busy : out std_logic);
+--  end component fifo_for_adc_snapshot;
+
   signal fifo_rst    : std_logic;
   signal din         : std_logic_vector(31 downto 0);
   signal wr_en       : std_logic;
@@ -114,6 +128,19 @@ begin
       full        => full,
       almost_full => almost_full,
       empty       => empty);
+
+--  FIFO_512KB_for_ADC_Snapshot : fifo_for_adc_snapshot
+--    port map (
+--      clk         => clk,
+--      srst        => fifo_rst,
+--      din         => din,
+--      wr_en       => wr_en,
+--      rd_en       => valid,
+--      dout        => dout_buf,
+--      full        => full,
+--      empty       => empty,
+--      wr_rst_busy => open,
+--      rd_rst_busy => open);
 
   wr_en <= '1' when s_fifo = exec else '0';
   ack   <= '1' when s_fifo = fini else '0';

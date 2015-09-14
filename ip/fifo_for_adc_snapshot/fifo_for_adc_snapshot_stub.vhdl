@@ -1,7 +1,7 @@
--- Copyright 1986-2014 Xilinx, Inc. All Rights Reserved.
+-- Copyright 1986-2015 Xilinx, Inc. All Rights Reserved.
 -- --------------------------------------------------------------------------------
--- Tool Version: Vivado v.2014.2 (win64) Build 932637 Wed Jun 11 13:33:10 MDT 2014
--- Date        : Tue Jun 23 12:27:00 2015
+-- Tool Version: Vivado v.2015.2 (win64) Build 1266856 Fri Jun 26 16:35:25 MDT 2015
+-- Date        : Fri Jul 31 18:40:45 2015
 -- Host        : rhea running 64-bit Service Pack 1  (build 7601)
 -- Command     : write_vhdl -force -mode synth_stub
 --               C:/Users/hikaru/readout/rhea/project_3/project_3.srcs/sources_1/ip/fifo_for_adc_snapshot/fifo_for_adc_snapshot_stub.vhdl
@@ -33,6 +33,6 @@ attribute black_box_pad_pin : string;
 attribute syn_black_box of stub : architecture is true;
 attribute black_box_pad_pin of stub : architecture is "clk,rst,din[31:0],wr_en,rd_en,dout[31:0],full,almost_full,empty";
 attribute x_core_info : string;
-attribute x_core_info of stub : architecture is "fifo_generator_v12_0,Vivado 2014.2";
+attribute x_core_info of stub : architecture is "fifo_generator_v12_0,Vivado 2015.2";
 begin
 end;

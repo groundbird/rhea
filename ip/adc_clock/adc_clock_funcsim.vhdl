@@ -1,7 +1,7 @@
--- Copyright 1986-2014 Xilinx, Inc. All Rights Reserved.
+-- Copyright 1986-2015 Xilinx, Inc. All Rights Reserved.
 -- --------------------------------------------------------------------------------
--- Tool Version: Vivado v.2014.2 (win64) Build 932637 Wed Jun 11 13:33:10 MDT 2014
--- Date        : Mon Jul 06 19:09:15 2015
+-- Tool Version: Vivado v.2015.2 (win64) Build 1266856 Fri Jun 26 16:35:25 MDT 2015
+-- Date        : Fri Jul 31 18:38:55 2015
 -- Host        : rhea running 64-bit Service Pack 1  (build 7601)
 -- Command     : write_vhdl -force -mode funcsim
 --               C:/Users/hikaru/readout/rhea/project_3/project_3.srcs/sources_1/ip/adc_clock/adc_clock_funcsim.vhdl
@@ -62,7 +62,7 @@ architecture STRUCTURE of adc_clock_adc_clock_clk_wiz is
   attribute box_type of mmcm_adv_inst : label is "PRIMITIVE";
 begin
 clkf_buf: unisim.vcomponents.BUFG
-    port map (
+     port map (
       I => clkfbout_adc_clock,
       O => clkfbout_buf_adc_clock
     );
@@ -71,18 +71,18 @@ clkin1_ibufgds: unisim.vcomponents.IBUFDS
       DQS_BIAS => "FALSE",
       IOSTANDARD => "DEFAULT"
     )
-    port map (
+        port map (
       I => clk_in1_p,
       IB => clk_in1_n,
       O => clk_in1_adc_clock
     );
 clkout1_buf: unisim.vcomponents.BUFG
-    port map (
+     port map (
       I => clk_out1_adc_clock,
       O => clk_out1
     );
 clkout2_buf: unisim.vcomponents.BUFG
-    port map (
+     port map (
       I => clk_out2_adc_clock,
       O => clk_out2
     );
@@ -130,14 +130,14 @@ mmcm_adv_inst: unisim.vcomponents.MMCME2_ADV
       IS_PSINCDEC_INVERTED => '0',
       IS_PWRDWN_INVERTED => '0',
       IS_RST_INVERTED => '0',
-      REF_JITTER1 => 0.010000,
+      REF_JITTER1 => 0.000000,
       REF_JITTER2 => 0.000000,
       SS_EN => "FALSE",
       SS_MODE => "CENTER_HIGH",
       SS_MOD_PERIOD => 10000,
       STARTUP_WAIT => false
     )
-    port map (
+        port map (
       CLKFBIN => clkfbout_buf_adc_clock,
       CLKFBOUT => clkfbout_adc_clock,
       CLKFBOUTB => NLW_mmcm_adv_inst_CLKFBOUTB_UNCONNECTED,
@@ -216,7 +216,7 @@ end adc_clock;
 architecture STRUCTURE of adc_clock is
 begin
 U0: entity work.adc_clock_adc_clock_clk_wiz
-    port map (
+     port map (
       clk_in1_n => clk_in1_n,
       clk_in1_p => clk_in1_p,
       clk_out1 => clk_out1,

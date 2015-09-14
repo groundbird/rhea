@@ -110,6 +110,22 @@ begin
       TBYTEIN   => '0',
       TCE       => '0');
 
+--  DAC_Data_Clock_OSERDESE3_inst : OSERDESE3
+--    generic map (
+--      DATA_WIDTH         => 4,
+--      INIT               => '0',
+--      IS_CLKDIV_INVERTED => '0',
+--      IS_CLK_INVERTED    => '0',
+--      IS_RST_INVERTED    => '0')
+--    port map (
+--      OQ     => dclk,
+--      T_OUT  => open,
+--      CLK    => clk_2x,
+--      CLKDIV => clk,
+--      D      => "00000101",
+--      RST    => io_rst,
+--      T      => '0');
+
   DAC_Data_Clock_OBUFDS_inst : OBUFDS
     generic map (
       IOSTANDARD => "DEFAULT",
@@ -122,48 +138,6 @@ begin
   ---------------------------------------------------------------------------
   -- I/O Reset, Frame and DAC Enable Signal
   ---------------------------------------------------------------------------
---  Frame_OSERDES2_inst : OSERDESE2
---    generic map (
---      DATA_RATE_OQ   => "DDR",
---      DATA_RATE_TQ   => "DDR",
---      DATA_WIDTH     => 4,
---      INIT_OQ        => '0',
---      INIT_TQ        => '0',
---      SERDES_MODE    => "MASTER",
---      SRVAL_OQ       => '0',
---      SRVAL_TQ       => '0',
---      TBYTE_CTL      => "FALSE",
---      TBYTE_SRC      => "FALSE",
---      TRISTATE_WIDTH => 1)
---    port map (
---      OFB       => open,
---      OQ        => frame,
---      SHIFTOUT1 => open,
---      SHIFTOUT2 => open,
---      TBYTEOUT  => open,
---      TFB       => open,
---      TQ        => open,
---      CLK       => clk_2x,
---      CLKDIV    => clk,
---      D1        => frame_buf,
---      D2        => frame_buf,
---      D3        => frame_buf,
---      D4        => frame_buf,
---      D5        => '0',
---      D6        => '0',
---      D7        => '0',
---      D8        => '0',
---      OCE       => '1',
---      RST       => io_rst,
---      SHIFTIN1  => '0',
---      SHIFTIN2  => '0',
---      T1        => '0',
---      T2        => '0',
---      T3        => '0',
---      T4        => '0',
---      TBYTEIN   => '0',
---      TCE       => '0');
-
   process(clk)
   begin
     if rising_edge(clk) then
@@ -265,6 +239,22 @@ begin
         T4        => '0',
         TBYTEIN   => '0',
         TCE       => '0');
+
+--    DAC_Data_OSERDES3_inst : OSERDESE3
+--      generic map (
+--        DATA_WIDTH         => 4,
+--        INIT               => '0',
+--        IS_CLKDIV_INVERTED => '0',
+--        IS_CLK_INVERTED    => '0',
+--        IS_RST_INVERTED    => '0')
+--      port map (
+--        OQ     => data(i),
+--        T_OUT  => open,
+--        CLK    => clk_2x,
+--        CLKDIV => clk,
+--        D      => "0000" & din_b_buf(i) & din_b_buf(i+8) & din_a_buf(i) & din_a_buf(i+8),
+--        RST    => io_rst,
+--        T      => '0');
 
     DAC_Data_OBUFDS_inst : OBUFDS
       generic map (

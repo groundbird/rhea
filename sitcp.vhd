@@ -162,7 +162,7 @@ begin
       ext_ip_addr    => (others => '0'),
       ext_tcp_port   => (others => '0'),
       ext_rbcp_port  => (others => '0'),
-      phy_addr       => "00111",        -- GMII mode
+      phy_addr       => "00111",          -- GMII mode
       eeprom_cs      => open,
       eeprom_sk      => open,
       eeprom_di      => open,
@@ -207,7 +207,7 @@ begin
       rbcp_ack       => rbcp_ack,
       rbcp_rd        => rbcp_rd);
 
-  ODDR_phy_txc_gtxclk : ODDR
+  phy_txc_gtxclk_ODDR_inst : ODDR
     generic map (
       DDR_CLK_EDGE => "OPPOSITE_EDGE",
       INIT         => '0',
@@ -220,6 +220,19 @@ begin
       D2 => '0',
       R  => '0',
       S  => '0');
+
+--  GTXCLK_ODDRE1_inst : ODDRE1
+--    generic map (
+--      IS_C_INVERTED  => '0',
+--      IS_D1_INVERTED => '0',
+--      IS_D2_INVERTED => '0',
+--      SRVAL          => '0')
+--    port map (
+--      Q  => phy_txc_gtxclk,
+--      C  => clk_125,
+--      D1 => '1',
+--      D2 => '0',
+--      SR => '0');
 
   BUFGMUX_gmii_tx_clk : BUFGMUX
     port map (

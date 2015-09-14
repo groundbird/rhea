@@ -1,7 +1,7 @@
-// Copyright 1986-2014 Xilinx, Inc. All Rights Reserved.
+// Copyright 1986-2015 Xilinx, Inc. All Rights Reserved.
 // --------------------------------------------------------------------------------
-// Tool Version: Vivado v.2014.2 (win64) Build 932637 Wed Jun 11 13:33:10 MDT 2014
-// Date        : Tue Jun 23 12:27:00 2015
+// Tool Version: Vivado v.2015.2 (win64) Build 1266856 Fri Jun 26 16:35:25 MDT 2015
+// Date        : Fri Jul 31 18:40:45 2015
 // Host        : rhea running 64-bit Service Pack 1  (build 7601)
 // Command     : write_verilog -force -mode synth_stub
 //               C:/Users/hikaru/readout/rhea/project_3/project_3.srcs/sources_1/ip/fifo_for_adc_snapshot/fifo_for_adc_snapshot_stub.v
@@ -13,7 +13,7 @@
 // This empty module with port declaration file causes synthesis tools to infer a black box for IP.
 // The synthesis directives are for Synopsys Synplify support to prevent IO buffer insertion.
 // Please paste the declaration into a Verilog source file or add the file as an additional source.
-(* x_core_info = "fifo_generator_v12_0,Vivado 2014.2" *)
+(* x_core_info = "fifo_generator_v12_0,Vivado 2015.2" *)
 module fifo_for_adc_snapshot(clk, rst, din, wr_en, rd_en, dout, full, almost_full, empty)
 /* synthesis syn_black_box black_box_pad_pin="clk,rst,din[31:0],wr_en,rd_en,dout[31:0],full,almost_full,empty" */;
   input clk;

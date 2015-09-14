@@ -47,7 +47,7 @@
 -- DO NOT MODIFY THIS FILE.
 
 -- IP VLNV: xilinx.com:ip:c_accum:12.0
--- IP Revision: 4
+-- IP Revision: 6
 
 -- The following code must appear in the VHDL architecture header.
 
@@ -61,11 +61,6 @@ COMPONENT accumulator
     Q : OUT STD_LOGIC_VECTOR(55 DOWNTO 0)
   );
 END COMPONENT;
-ATTRIBUTE SYN_BLACK_BOX : BOOLEAN;
-ATTRIBUTE SYN_BLACK_BOX OF accumulator : COMPONENT IS TRUE;
-ATTRIBUTE BLACK_BOX_PAD_PIN : STRING;
-ATTRIBUTE BLACK_BOX_PAD_PIN OF accumulator : COMPONENT IS "B[30:0],CLK,CE,SCLR,Q[55:0]";
-
 -- COMP_TAG_END ------ End COMPONENT Declaration ------------
 
 -- The following code must appear in the VHDL architecture

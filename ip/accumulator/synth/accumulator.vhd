@@ -47,7 +47,7 @@
 -- DO NOT MODIFY THIS FILE.
 
 -- IP VLNV: xilinx.com:ip:c_accum:12.0
--- IP Revision: 4
+-- IP Revision: 6
 
 LIBRARY ieee;
 USE ieee.std_logic_1164.ALL;
@@ -107,11 +107,11 @@ ARCHITECTURE accumulator_arch OF accumulator IS
     );
   END COMPONENT c_accum_v12_0;
   ATTRIBUTE X_CORE_INFO : STRING;
-  ATTRIBUTE X_CORE_INFO OF accumulator_arch: ARCHITECTURE IS "c_accum_v12_0,Vivado 2014.2";
+  ATTRIBUTE X_CORE_INFO OF accumulator_arch: ARCHITECTURE IS "c_accum_v12_0,Vivado 2015.2";
   ATTRIBUTE CHECK_LICENSE_TYPE : STRING;
   ATTRIBUTE CHECK_LICENSE_TYPE OF accumulator_arch : ARCHITECTURE IS "accumulator,c_accum_v12_0,{}";
   ATTRIBUTE CORE_GENERATION_INFO : STRING;
-  ATTRIBUTE CORE_GENERATION_INFO OF accumulator_arch: ARCHITECTURE IS "accumulator,c_accum_v12_0,{x_ipProduct=Vivado 2014.2,x_ipVendor=xilinx.com,x_ipLibrary=ip,x_ipName=c_accum,x_ipVersion=12.0,x_ipCoreRevision=4,x_ipLanguage=VHDL,C_XDEVICEFAMILY=kintex7,C_IMPLEMENTATION=0,C_VERBOSITY=0,C_B_WIDTH=31,C_OUT_WIDTH=56,C_B_TYPE=0,C_CE_OVERRIDES_SCLR=0,C_ADD_MODE=0,C_HAS_C_IN=0,C_HAS_CE=1,C_HAS_BYPASS=0,C_HAS_SCLR=1,C_LATENCY=5,C_SCALE=0,C_AINIT_VAL=0,C_SINIT_VAL=0,C_BYPASS_LOW=0,C_SCLR_OVERRIDES_SSET=1,C_HAS_SSET=0,C_HAS_SINIT=0}";
+  ATTRIBUTE CORE_GENERATION_INFO OF accumulator_arch: ARCHITECTURE IS "accumulator,c_accum_v12_0,{x_ipProduct=Vivado 2015.2,x_ipVendor=xilinx.com,x_ipLibrary=ip,x_ipName=c_accum,x_ipVersion=12.0,x_ipCoreRevision=6,x_ipLanguage=VHDL,x_ipSimLanguage=VHDL,C_XDEVICEFAMILY=kintex7,C_IMPLEMENTATION=0,C_VERBOSITY=0,C_B_WIDTH=31,C_OUT_WIDTH=56,C_B_TYPE=0,C_CE_OVERRIDES_SCLR=0,C_ADD_MODE=0,C_HAS_C_IN=0,C_HAS_CE=1,C_HAS_BYPASS=0,C_HAS_SCLR=1,C_LATENCY=5,C_SCALE=0,C_AINIT_VAL=0,C_SINIT_VAL=0,C_BYPASS_LOW=0,C_SCLR_OVERRIDES_SSET=1,C_HAS_SSET=0,C_HAS_SINIT=0}";
   ATTRIBUTE X_INTERFACE_INFO : STRING;
   ATTRIBUTE X_INTERFACE_INFO OF B: SIGNAL IS "xilinx.com:signal:data:1.0 b_intf DATA";
   ATTRIBUTE X_INTERFACE_INFO OF CLK: SIGNAL IS "xilinx.com:signal:clock:1.0 clk_intf CLK";
