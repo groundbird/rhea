@@ -128,15 +128,4 @@ begin
     end if;
   end process;
 
---  Timestampe_proc : process(ts_rst, clk)
---  begin
---    if ts_rst = '1' then
---      ts_buf <= (others => '0');
---    elsif rising_edge(clk) then
---      ts_buf <= ts_buf + ack;
---    else
---      null;
---    end if;
---  end process;
-
 end architecture Behavioral;

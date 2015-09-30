@@ -38,7 +38,7 @@ package rhea_pkg is
   ---------------------------------------------------------------------------
   constant N_CHANNEL       : integer := 1;
   constant DOWNSAMPLE_RATE : integer := 200000;
-  constant IQ_DATA_WIDTH   : integer := 56;  -- until 30M down-sample possible  
+  constant IQ_DATA_WIDTH   : integer := 56;
   constant LATENCY_ACC     : integer := 5;   -- accumlator latency
 
   ---------------------------------------------------------------------------

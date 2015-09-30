@@ -592,7 +592,6 @@ begin
       clk      => clk_adc,
       rst      => adc_rst,
       req      => iq_req,
---      tgl      => iq_tgl,
       fmt_busy => fmt_busy,
       -- out
       valid    => iq_en,
@@ -729,7 +728,6 @@ begin
       rxd       => rbcp_mdl_rxd,
       spi_txd   => spi_txd,
       dds_pinc  => dds_pinc,
---      iq_tgl    => iq_tgl,
       busy      => rbcp_busy);
 
   rbcp_id <= rbcp_addr(31 downto 28);   -- Control module ID
