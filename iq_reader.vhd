@@ -67,7 +67,6 @@ begin
       else
         case s_iq is
           when idle =>
---            if req = '1' and tgl = '1' and fmt_busy = '0' then
             if req = '1' and fmt_busy = '0' then
               s_iq <= init;
             else

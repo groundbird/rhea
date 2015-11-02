@@ -42,8 +42,10 @@ entity ddc is
     rst    : in  std_logic;
     adcd_a : in  std_logic_vector(13 downto 0);
     adcd_b : in  std_logic_vector(13 downto 0);
-    cos    : in  std_logic_vector(15 downto 0);
-    sin    : in  std_logic_vector(15 downto 0);
+--    cos    : in  std_logic_vector(15 downto 0);
+--    sin    : in  std_logic_vector(15 downto 0);
+    cos    : in  std_logic_vector(SIN_COS_WIDTH-1 downto 0);
+    sin    : in  std_logic_vector(SIN_COS_WIDTH-1 downto 0);
     iout   : out std_logic_vector(30 downto 0);
     qout   : out std_logic_vector(30 downto 0));
 end entity ddc;
@@ -54,44 +56,64 @@ architecture Behavioral of ddc is
     port (
       clk : in  std_logic;
       a   : in  std_logic_vector(13 downto 0);
-      b   : in  std_logic_vector(15 downto 0);
-      p   : out std_logic_vector(29 downto 0));
+--      b   : in  std_logic_vector(15 downto 0);
+      b   : in  std_logic_vector(SIN_COS_WIDTH-1 downto 0);
+--      p   : out std_logic_vector(29 downto 0));
+      p   : out std_logic_vector(SIN_COS_WIDTH+13 downto 0));
   end component multiplier;
 
   signal adcd_a_buf : std_logic_vector(13 downto 0);
   signal adcd_b_buf : std_logic_vector(13 downto 0);
-  signal cos_buf    : std_logic_vector(15 downto 0);
-  signal sin_buf    : std_logic_vector(15 downto 0);
+--  signal cos_buf    : std_logic_vector(15 downto 0);
+--  signal sin_buf    : std_logic_vector(15 downto 0);
+  signal cos_buf    : std_logic_vector(SIN_COS_WIDTH-1 downto 0);
+  signal sin_buf    : std_logic_vector(SIN_COS_WIDTH-1 downto 0);
 
-  signal coscos : std_logic_vector(29 downto 0);
-  signal sinsin : std_logic_vector(29 downto 0);
-  signal sincos : std_logic_vector(29 downto 0);
-  signal cossin : std_logic_vector(29 downto 0);
+--  signal coscos : std_logic_vector(29 downto 0);
+--  signal sinsin : std_logic_vector(29 downto 0);
+--  signal sincos : std_logic_vector(29 downto 0);
+--  signal cossin : std_logic_vector(29 downto 0);
+  signal coscos : std_logic_vector(SIN_COS_WIDTH+13 downto 0);
+  signal sinsin : std_logic_vector(SIN_COS_WIDTH+13 downto 0);
+  signal sincos : std_logic_vector(SIN_COS_WIDTH+13 downto 0);
+  signal cossin : std_logic_vector(SIN_COS_WIDTH+13 downto 0);
 
-  signal coscos_buf : std_logic_vector(29 downto 0);
-  signal sinsin_buf : std_logic_vector(29 downto 0);
-  signal sincos_buf : std_logic_vector(29 downto 0);
-  signal cossin_buf : std_logic_vector(29 downto 0);
+--  signal coscos_buf : std_logic_vector(29 downto 0);
+--  signal sinsin_buf : std_logic_vector(29 downto 0);
+--  signal sincos_buf : std_logic_vector(29 downto 0);
+--  signal cossin_buf : std_logic_vector(29 downto 0);
+  signal coscos_buf : std_logic_vector(SIN_COS_WIDTH+13 downto 0);
+  signal sinsin_buf : std_logic_vector(SIN_COS_WIDTH+13 downto 0);
+  signal sincos_buf : std_logic_vector(SIN_COS_WIDTH+13 downto 0);
+  signal cossin_buf : std_logic_vector(SIN_COS_WIDTH+13 downto 0);
 
   component adder is
     port (
-      a   : in  std_logic_vector(29 downto 0);
-      b   : in  std_logic_vector(29 downto 0);
+--      a   : in  std_logic_vector(29 downto 0);
+--      b   : in  std_logic_vector(29 downto 0);
+      a   : in  std_logic_vector(SIN_COS_WIDTH+13 downto 0);
+      b   : in  std_logic_vector(SIN_COS_WIDTH+13 downto 0);
       clk : in  std_logic;
-      s   : out std_logic_vector(30 downto 0));      
+--      s   : out std_logic_vector(30 downto 0));
+      s   : out std_logic_vector(SIN_COS_WIDTH+14 downto 0));
   end component adder;
 
-  signal iout_buf : std_logic_vector(30 downto 0);
+  signal iout_buf : std_logic_vector(SIN_COS_WIDTH+14 downto 0);
+--  signal iout_buf  : std_logic_vector(30 downto 0);
 
   component subtracter is
     port (
-      a   : in  std_logic_vector(29 downto 0);
-      b   : in  std_logic_vector(29 downto 0);
+--      a   : in  std_logic_vector(29 downto 0);
+--      b   : in  std_logic_vector(29 downto 0);
+      a   : in  std_logic_vector(SIN_COS_WIDTH+13 downto 0);
+      b   : in  std_logic_vector(SIN_COS_WIDTH+13 downto 0);
       clk : in  std_logic;
-      s   : out std_logic_vector(30 downto 0));
+--      s   : out std_logic_vector(30 downto 0));
+      s   : out std_logic_vector(SIN_COS_WIDTH+14 downto 0));
   end component subtracter;
 
-  signal qout_buf : std_logic_vector(30 downto 0);
+  signal qout_buf : std_logic_vector(SIN_COS_WIDTH+14 downto 0);
+--  signal qout_buf  : std_logic_vector(30 downto 0);
 
 begin
 
@@ -120,6 +142,8 @@ begin
         cossin_buf <= cossin;
         iout       <= iout_buf;
         qout       <= qout_buf;
+--        iout <= conv_std_logic_vector(signed(iout_buf), 31);
+--        qout <= conv_std_logic_vector(signed(qout_buf), 31);
       end if;
     end if;
   end process;

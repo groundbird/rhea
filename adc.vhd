@@ -86,7 +86,6 @@ begin
         INIT_Q1      => '0',
         INIT_Q2      => '0',
         SRTYPE       => "ASYNC")
---        SRTYPE       => "SYNC")
       port map (
         Q1 => dout_a(2*i),
         Q2 => dout_a(2*i+1),
@@ -102,7 +101,6 @@ begin
         INIT_Q1      => '0',
         INIT_Q2      => '0',
         SRTYPE       => "ASYNC")
---        SRTYPE       => "SYNC")
       port map (
         Q1 => dout_b(2*i),
         Q2 => dout_b(2*i+1),

@@ -32,6 +32,9 @@ use IEEE.STD_LOGIC_ARITH.all;
 --library UNISIM;
 --use UNISIM.VComponents.all;
 
+library work;
+use work.rhea_pkg.all;
+
 entity rbcp is
   generic (
     d_width : integer);
@@ -51,11 +54,10 @@ entity rbcp is
     ack       : in  std_logic;
     req       : out std_logic;
     rxd       : in  std_logic_vector(d_width-1 downto 0);
---    rxd       : in  std_logic_vector(7 downto 0);
     spi_txd   : out std_logic_vector(d_width-1 downto 0);
-    dds_pinc  : out std_logic_vector(31 downto 0);
---    iq_mode   : out std_logic_vector(1 downto 0);
-    busy      : out std_logic);
+    dds_pinc  : out dds_pinc_array;
+    busy      : out std_logic;
+    debug     : out dds_pinc_array);
 end rbcp;
 
 architecture Behavioral of rbcp is
@@ -65,21 +67,20 @@ architecture Behavioral of rbcp is
 
 begin
 
-  busy <= '1' when s_rbcp /= idle else '0';
+  busy     <= '1' when s_rbcp /= idle else '0';
+  rbcp_ack <= '1' when s_rbcp = fini  else '0';
 
   RBCP_SM_proc : process(clk)
   begin
     if rising_edge(clk) then
       if rst = '1' then
-        s_rbcp   <= init;
-        rbcp_ack <= '0';
-        rbcp_rd  <= (others => '0');
-        req      <= '0';
+        s_rbcp  <= init;
+        rbcp_rd <= (others => '0');
+        req     <= '0';
       else
         case s_rbcp is
           when init =>
-            rbcp_ack <= '0';
-            req      <= '0';
+            req <= '0';
             if rbcp_act = '1' then
               s_rbcp <= idle;
             else
@@ -98,24 +99,14 @@ begin
             req <= '0';
             if ack = '1' then
               s_rbcp <= fini;
---            elsif rbcp_addr(31 downto 28) = x"6" then
---              s_rbcp <= fini;
             else
               s_rbcp <= tx;
             end if;
 
           when fini =>
-            rbcp_ack <= '1';
-            s_rbcp   <= init;
-            rbcp_rd  <= rxd(7 downto 0);
+            s_rbcp  <= init;
+            rbcp_rd <= rxd(7 downto 0);
 
---            case rbcp_addr(31 downto 28) is
---              when x"1"   => rbcp_rd <= rxd(7 downto 0);
---              when x"2"   => rbcp_rd <= rxd(7 downto 0);
---              when x"6"   => rbcp_rd <= pinc_reg(31 downto 24);
---              when others => null;
---            end case;
-            
           when others => s_rbcp <= init;
         end case;
       end if;
@@ -127,8 +118,8 @@ begin
     if rising_edge(clk) then
       if rst = '1' then
         spi_txd  <= (others => '0');
-        dds_pinc <= (others => '0');
---        iq_tgl  <= '0';
+        dds_pinc <= (others => x"00000000");
+--        debug    <= (others => x"00000000");
       else
         case rbcp_addr(31 downto 24) is
           when x"10" =>
@@ -149,35 +140,72 @@ begin
 
           when x"40" =>
             -- Set Frequency for DDS
-            case rbcp_addr(3 downto 0) is
-              when x"0"   => dds_pinc(31 downto 24) <= rbcp_wd;
-              when x"1"   => dds_pinc(23 downto 16) <= rbcp_wd;
-              when x"2"   => dds_pinc(15 downto 8)  <= rbcp_wd;
-              when x"3"   => dds_pinc(7 downto 0)   <= rbcp_wd;
+            case rbcp_addr(7 downto 0) is
+--              -- ch. 0
+--              when x"00" => dds_pinc(0)(31 downto 24) <= rbcp_wd;
+--              when x"01" => dds_pinc(0)(23 downto 16) <= rbcp_wd;
+--              when x"02" => dds_pinc(0)(15 downto 8)  <= rbcp_wd;
+--              when x"03" => dds_pinc(0)(7 downto 0)   <= rbcp_wd;
+--              -- ch. 1
+--              when x"04" => dds_pinc(1)(31 downto 24) <= rbcp_wd;
+--              when x"05" => dds_pinc(1)(23 downto 16) <= rbcp_wd;
+--              when x"06" => dds_pinc(1)(15 downto 8)  <= rbcp_wd;
+--              when x"07" => dds_pinc(1)(7 downto 0)   <= rbcp_wd;
+
+              when x"00" => null;
+              -- ch. 0
+              when x"01" => dds_pinc(0)(31 downto 24) <= rbcp_wd;
+              when x"02" => dds_pinc(0)(23 downto 16) <= rbcp_wd;
+              when x"03" => dds_pinc(0)(15 downto 8)  <= rbcp_wd;
+              when x"04" => dds_pinc(0)(7 downto 0)   <= rbcp_wd;
+              -- ch. 1
+              when x"05" => dds_pinc(1)(31 downto 24) <= rbcp_wd;
+              when x"06" => dds_pinc(1)(23 downto 16) <= rbcp_wd;
+              when x"07" => dds_pinc(1)(15 downto 8)  <= rbcp_wd;
+              when x"08" => dds_pinc(1)(7 downto 0)   <= rbcp_wd;
+
               when others => null;
             end case;
 
---          when x"41" =>
---            -- Read frequency
-            
+--          when x"f0" =>
+--            -- Debug
+--            case rbcp_addr(23 downto 0) is
+--              when x"000000" => debug(0)(31 downto 24) <= rbcp_wd;
+--              when x"000001" => debug(0)(23 downto 16) <= rbcp_wd;
+--              when x"000002" => debug(0)(15 downto 08) <= rbcp_wd;
+--              when x"000003" => debug(0)(07 downto 00) <= rbcp_wd;
 
---          when x"50" =>
---            -- Turn on IQ reader
---            iq_tgl <= '1';
---          when x"51" =>
---            -- Turn off IQ reader
---            iq_tgl <= '0';
+--              when x"000004" => debug(1)(31 downto 24) <= rbcp_wd;
+--              when x"000005" => debug(1)(23 downto 16) <= rbcp_wd;
+--              when x"000006" => debug(1)(15 downto 08) <= rbcp_wd;
+--              when x"000007" => debug(1)(07 downto 00) <= rbcp_wd;
 
---          when x"61" =>
---            -- Check phase increment
---            case rbcp_addr(3 downto 0) is
---              when x"0"   => rxd <= dds_pinc(31 downto 24);
-----              when x"1"   => rxd <= dds_pinc(23 downto 16);
-----              when x"2"   => rxd <= dds_pinc(15 downto 8);
-----              when x"3"   => rxd <= dds_pinc(7 downto 0);
---              when others => null;
---            end case;
-            
+--          when others => null;
+--        end case;
+
+          when others => null;
+        end case;
+      end if;
+    end if;
+  end process;
+
+  process(clk)
+  begin
+    if clk'event and clk = '1' then
+      if rst = '1' then
+        debug <= (others => x"00000000");
+      else
+        case rbcp_addr is
+          when x"f0000000" => debug(0)(31 downto 24) <= rbcp_wd;
+          when x"f0000001" => debug(0)(23 downto 16) <= rbcp_wd;
+          when x"f0000002" => debug(0)(15 downto 08) <= rbcp_wd;
+          when x"f0000003" => debug(0)(07 downto 00) <= rbcp_wd;
+
+          when x"f0000004" => debug(1)(31 downto 24) <= rbcp_wd;
+          when x"f0000005" => debug(1)(23 downto 16) <= rbcp_wd;
+          when x"f0000006" => debug(1)(15 downto 08) <= rbcp_wd;
+          when x"f0000007" => debug(1)(07 downto 00) <= rbcp_wd;
+
           when others => null;
         end case;
       end if;

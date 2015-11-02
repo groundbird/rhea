@@ -41,7 +41,7 @@ entity downsampler is
     clk   : in  std_logic;
     rst   : in  std_logic;
     din   : in  std_logic_vector(30 downto 0);
-    dout  : out std_logic_vector(IQ_DATA_WIDTH-1 downto 0);
+    dout  : out std_logic_vector(IQ_DS_DATA_WIDTH-1 downto 0);
     valid : out std_logic);
 end entity downsampler;
 
@@ -53,12 +53,12 @@ architecture Behavioral of downsampler is
       clk  : in  std_logic;
       ce   : in  std_logic;
       sclr : in  std_logic;
-      q    : out std_logic_vector(IQ_DATA_WIDTH-1 downto 0));
+      q    : out std_logic_vector(IQ_DS_DATA_WIDTH-1 downto 0));
   end component accumulator;
 
   signal sclr    : std_logic;
   signal din_buf : std_logic_vector(30 downto 0);
-  signal d_acc   : std_logic_vector(IQ_DATA_WIDTH-1 downto 0);
+  signal d_acc   : std_logic_vector(IQ_DS_DATA_WIDTH-1 downto 0);
 
   type ds_state is (idle, init, latency, exec);
   signal s_ds : ds_state;

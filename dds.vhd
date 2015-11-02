@@ -44,8 +44,10 @@ entity dds is
     pinc     : in     std_logic_vector(31 downto 0);
     pinc_reg : buffer std_logic_vector(31 downto 0);
     valid    : out    std_logic;
-    cos      : out    std_logic_vector(15 downto 0);
-    sin      : out    std_logic_vector(15 downto 0);
+--    cos      : out    std_logic_vector(15 downto 0);
+--    sin      : out    std_logic_vector(15 downto 0);
+    cos      : out    std_logic_vector(SIN_COS_WIDTH-1 downto 0);
+    sin      : out    std_logic_vector(SIN_COS_WIDTH-1 downto 0);
     busy     : out    std_logic;
     ack      : out    std_logic);
 end entity dds;
@@ -64,7 +66,7 @@ architecture Behavioral of dds is
   end component dds_compiler;
 
   signal dds_rstn : std_logic;
-  signal d        : std_logic_vector(31 downto 0);
+  signal dds_data : std_logic_vector(31 downto 0);
 
   type dds_state is (idle, init, exec, fini);
   signal s_dds : dds_state;
@@ -78,8 +80,10 @@ begin
         sin <= (others => '0');
         cos <= (others => '0');
       else
-        sin <= d(31 downto 16);
-        cos <= d(15 downto 0);
+--        sin <= dds_data(31 downto 16);
+--        cos <= dds_data(15 downto 0);
+        sin <= dds_data(SIN_COS_WIDTH+15 downto 16);
+        cos <= dds_data(SIN_COS_WIDTH-1 downto 0);
       end if;
     end if;
   end process;
@@ -94,7 +98,7 @@ begin
       s_axis_phase_tdata  => pinc_reg,
       -- out
       m_axis_data_tvalid  => valid,
-      m_axis_data_tdata   => d);
+      m_axis_data_tdata   => dds_data);
 
   busy     <= '1' when s_dds /= idle else '0';
   dds_rstn <= '0' when s_dds = init  else '1';
